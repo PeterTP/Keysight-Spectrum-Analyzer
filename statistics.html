@@ -1,0 +1,285 @@
+<!-- shop/templates/statistics.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>VSA Lab</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-v4-grid-only@1.0.0/dist/bootstrap-grid.min.css">
+  </head>
+  <body bgcolor="black">
+  {% load static %}
+  <style>
+  body {
+  background-image: url('{% static 'N9320.jpg' %}');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  width:1920px;
+  height:1000px;
+  position:absolute;
+  overflow:hidden;
+}
+
+</style>
+<div class="tablet-screen">
+  <!-- div class="tablet-screen" -->
+    <!-- img class="tablet-image" src="{% static 'N9320.jpg' %}" / -->
+    <div id=graph class="tablet-image-inside">
+          <style>
+  graph {
+  width:100%;
+  height:100%;
+  left: 200px;
+  top: 200px;
+  position:relative;
+	padding: 60px;//4% 2% 8% 4%;
+	overflow:hidden;
+}
+</style>
+        <canvas id="salesChart" width="1000px" ></canvas>
+    </div>
+
+<div id="settings">
+      <form id="filterForm">
+
+                    <style>
+
+                      //      .styled-select option.service-small {
+//    font-size: 1px;
+//    padding: 5px;
+  //  background: #000000;
+//}
+
+settings {
+    background-color: rgba(0,0,0,0.5);
+    position: relative;
+    float: right;
+    left: 300px;
+    width : 260px;
+    height : 260px;
+    border-radius:50%;
+    padding: 60px;
+    }
+</style>
+
+        <label for="year">Choose Setting:</label>
+        <!-- select name="year" id="year" fontsize="0.1" class="service-small" style='display:none'></select -->
+  <select name="year" id="year">
+        <option value="Freq.Syn-Off">Freq.Syn-Off</option>
+  <option value="Freq.Syn-818">Freq.Syn-818</option>
+  <option value="Freq.Syn-880">Freq.Syn-880</option>
+  </select>
+            <input type="range" id="center" name="center"
+         min="0" max="3000000000">
+  <label for="center">center</label>
+
+<input type="range" id="span" name="span"
+         min="10000" max="1000000000">
+  <label for="span">span</label>
+    </select>
+
+
+
+  <input type="submit" value="Load" name="_load">
+      </form>
+    </div>
+        <!-- /div -->
+</div>
+      <script>
+        $(document).ready(function() {
+          $.ajax({
+            url: "/vsa/chart/filter-options/",
+            type: "GET",
+            dataType: "json",
+            success: (jsonResponse) => {
+              // Load all the options
+              //jsonResponse.options.forEach(option => {
+               // $("#year").append(new Option(option, option));
+              //});
+              // Load data for the first option
+              //loadAllCharts($("#year").children().first().val());
+
+                      const year = $("#year").val();
+        const center = $("#center").val();
+        const span = $("#span").val();
+//+',' + center + ',' + span
+        loadAllCharts(year+',' + center + ',' + span)
+
+            },
+            error: () => console.log("Failed to fetch chart filter options!")
+          });
+        });
+
+      $("#filterForm").on("submit", (event) => {
+        event.preventDefault();
+
+        const year = $("#year").val();
+        const center = $("#center").val();
+        const span = $("#span").val();
+//+',' + center + ',' + span
+        loadAllCharts(year+',' + center + ',' + span)
+      });
+
+      function loadChart(chart, endpoint) {
+        $.ajax({
+          url: endpoint,
+          type: "GET",
+          dataType: "json",
+          success: (jsonResponse) => {
+            // Extract data from the response
+            const title = jsonResponse.title;
+            const labels = jsonResponse.data.labels;
+            const datasets = jsonResponse.data.datasets;
+
+            // Reset the current chart
+            chart.data.datasets = [];
+            chart.data.labels = [];
+
+            // Load new data into the chart
+            chart.options.title.text = title;
+            chart.options.title.display = true;
+            chart.data.labels = labels;
+            datasets.forEach(dataset => {
+              chart.data.datasets.push(dataset);
+            });
+
+
+            chart.update();
+          },
+          //error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+               error: function(xhr, status, error){
+         var errorMessage = xhr.status + ': ' + xhr.statusText
+         alert('Error - ' + errorMessage);
+         }
+
+        });
+
+
+
+      }
+
+      function loadAllCharts(year) {
+        //loadChart(salesChart, `/vsa/chart/sales/2021/`);
+        loadChart(salesChart, `/vsa/chart/sales/${year}/`);
+      }
+      </script>
+      <script>
+        let salesCtx = document.getElementById("salesChart").getContext("2d");
+        Chart.defaults.global.legend.display = false;
+
+        let salesChart = new Chart(salesCtx, {
+          type: "line",
+          options: {
+                    animation: {
+                        duration: 0, // general animation time
+                    },
+                    hover: {
+                        animationDuration: 0, // duration of animations when hovering an item
+                    },
+                    responsiveAnimationDuration: 0, // animation duration after a resize
+                    bezierCurve: true,
+                    events: [],
+                    responsive: false,
+                        elements: {
+                            point:{
+                                radius: 0
+                            },
+                                    line: {
+            tension: 0 // disables bezier curves
+        }
+                        },
+                    scales: {
+                            //scaleShowLabels : false,
+                            xAxes: [{
+                                ticks: {
+                                        //autoSkip: true,
+                                        //stepSize: 100,
+                                        //count: 10,
+                                        maxTicksLimit: 10,
+                                        display: false //this will remove only the label
+                                    },
+                                gridLines: {
+                                    color: "#333333",
+                                    display: false,
+                                    drawBorder: true
+                                        }
+
+                            }],
+
+                            yAxis: [{
+                                min: -50,
+                                max: 50,
+                                ticks: {
+                                        min: -100,
+                                        max: 200,
+                                        stepSize: 50,
+                                        suggestedMin: -200,
+                                        suggestedMax: 400,
+                                        //autoSkip: true,
+                                        //stepSize: 100,
+                                        count: 10,
+                                        maxTicksLimit: 10,
+                                        display: false //this will remove only the label,
+                                    },
+                                gridLines: {
+                                    drawBorder: false,
+                                    display: true,
+                                    color: "#333333"
+                                }
+                            }]
+                    }
+          }
+        });
+
+
+
+        var zero =0;
+
+
+        //var sineData = [];
+
+        const data0 = [];
+        const data1 = [];
+        const data2 = [];
+        const data3 = [];
+        const data4 = [];
+        const data5 = [];
+
+
+
+
+        //var databuffer = [];
+         //var databuffer = cloneObject(salesChart.data.datasets);
+
+function cloneObject(obj) {
+    var clone = {};
+    for(var i in obj) {
+        if(obj[i] != null &&  typeof(obj[i])=="object")
+            clone[i] = cloneObject(obj[i]);
+        else
+            clone[i] = obj[i];
+    }
+    return clone;
+}
+
+var tempcount=1;
+
+        function adddata(){
+                    salesChart.data.datasets[0].data = salesChart.data.datasets[tempcount].data  ;
+                    salesChart.data.datasets[0].pointRadius = salesChart.data.datasets[tempcount].pointRadius  ;
+                    salesChart.update();
+                    tempcount++;
+                    if(tempcount > 5)
+                        tempcount=1;
+        }
+
+
+        setInterval(function(){
+            adddata();
+        },500);
+
+
+      </script>
+  </body>
+</html>

@@ -1,0 +1,3550 @@
+<!-- shop/templates/statistics.html -->
+
+  
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="ShwhuWS3">
+    <title>VSA Lab</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.4/html2canvas.min.js"></script>
+	<!-- link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-v4-grid-only@1.0.0/dist/bootstrap-grid.min.css" -->
+  </head>
+<body bgcolor="#220022">
+{% load static %}
+<!-- div class="tablet-screen" -->
+  <!-- img class="tablet-image" src="{% static 'N9320.jpg' %}" / -->
+<style>
+body {
+  font-family: Calibri, sans-serif;
+  font-size: 10px;
+}
+
+.column {
+  float: left;
+  font-family: Calibri, sans-serif;
+  position: relative;
+  
+}
+.row:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.right {
+  postition: absolute;
+  left: 885px;
+  top: 70px;
+  width: 30%;
+  float: left;
+  padding: 0% 0% 0% 2%
+}
+
+.wide {
+  grid-row: 2 / 4;                          /* 6 */
+  grid-column: 3 / 5;                       /* 6 */
+  padding: 10% 2% 8% 12.5%;
+
+}
+
+.button {
+  width: 93px;
+  height: 50px;
+  padding: 0px;
+  text-align: center;
+}
+
+#graph {
+  position: absolute;
+  left: 0px;
+  top: 70px;
+  height: 500px;
+  padding: 0% 0% 0% 0%;
+}
+
+#bodydiv {
+  position:relative;
+  //background-image: url('{% static 'N9321.png' %}');
+  background-color: #222222;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 1400px;
+  height: 600px;
+  text-align: start;
+}
+
+#animatedbox {
+  background-color: rgba(37, 82, 82, 1);
+  box-shadow: 4px 5px #000000;
+  padding: 1%;
+  width: 110%;
+  font-family: Calibri, sans-serif;
+  font-size: 16px;
+  line-height: normal;
+}
+
+#blockbox {
+  background-color: gray;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  opacity: 0.1;
+  z-index: 10;
+  cursor: wait;
+}
+
+#FrequencySet {
+  display: block;
+}
+
+#AmplitudeSet, #BWSet, #MarkerSet, #PeakSet, #ViewSet{
+  display: none;
+}
+
+label {
+  color:white;
+}
+
+//.styled-select option.service-small {
+//  font-size: 1px;
+//  padding: 5px;
+//  background: #000000;
+//}
+input.hidearrows::-webkit-outer-spin-button,
+input.hidearrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number].hidearrows {
+  -moz-appearance: textfield;
+}
+
+  .flex-container {
+	display: flex;
+	justify-content: start;
+	position: relative;
+	padding: 0px;
+	margin: 0px 0px 0px 0px;
+	border-radius: 4px;
+  }
+  .flex-column {
+	flex-direction: column;
+	background-color: #000011;
+	margin: 1px;
+  }
+  .flex-row {
+	flex-direction: row;
+	margin: 1px;
+	max-height: 700px;
+  }
+  .flex-item {
+	color: white;
+	//vertical-align: middle;
+	line-height: 40px;
+	//justify-content: center;
+	font-size: 20px;
+	margin: 10px;
+	border: 4px solid #444444;
+	background-color: #333333;
+	border-radius: 8px;
+  }
+  .flex-button {
+	background-color: #000022;
+	border: 2px solid azure;
+	font-family: Tahoma;
+	text-align: center;
+	padding: 2px;
+	min-height: 50px;
+	max-height: 50px;
+	min-width: 150px;
+	cursor: pointer;
+	transition: all 0.2s, left 1s;
+	transition-timing-function: ease-in-out;
+	overflow-y: hidden;
+  }
+  .flex-button:hover {
+	background-color: #333333;
+	font-size: 24px;
+	border: 4px solid azure;
+	transition: all 0.4s, background-color 0.8s;
+  }
+  .flex-button:active {
+	background-color: green;
+	font-size: 20px;
+	margin-top: 14px;
+	transition: all 0.1s;
+  }
+  .content {
+	font-family: Calibri;
+	display: none;
+	min-height:600px;
+	min-width:500px;
+	padding: 5px;
+	font-size: 20px;
+  }
+  .trainingImg {
+	display: none;
+  }
+  .border {
+	border: 5px solid #C0CCCC;
+  }
+  .reportTable td {
+	border: 1px solid black;
+  }
+  .startShow {
+	display: inline;
+  }
+  .reportTableInput {
+    width: 90px;
+  }
+  
+  #reportTab {
+	position: fixed;
+	width: 0px;
+	font-family: Calibri;
+	padding: 0px;
+	font-size: 20px;
+	height: 760px;
+	text-align: start;
+	overflow-y: auto;
+	overflow-x: auto;
+	color: white;
+	background-color: #333333;
+	z-index: 1;
+	top: 10px;
+	left: 0px;
+	transition: all 0.2s;
+  }
+  
+  #labSheetTab {
+	position: fixed;
+	width: 0px;
+	font-family: Calibri;
+	padding: 0px;
+	font-size: 20px;
+	height: 760px;
+	text-align: start;
+	overflow-y: auto;
+	overflow-x: auto;
+	color: white;
+	background-color: #333333;
+	z-index: 1;
+	top: 10px;
+	left: 0px;
+	transition: all 0.2s;
+  }
+  
+   #reportButton {
+	position: fixed;
+	font-size: 20px;
+	min-height: 50px;
+	min-width: 120px;
+	line-height: 10px;
+	z-index: 2;
+	top: 70px;
+	left: 15px;
+	background-color: #005555;
+	transition: left 0.2s;
+  }
+  
+  #labSheetButton {
+	position: fixed;
+	font-size: 20px;
+	min-height: 50px;
+	min-width: 140px;
+	line-height: 10px;
+	z-index: 2;
+	top: 15px;
+	left: 15px;
+	background-color: #550055;
+	transition: left 0.2s;
+  }
+  
+  #virtualSynth {
+	background-image: url({% static 'TrainingKit\TrainingKit_virtual_not_connected_edited.png' %});
+	background-size: contain;
+	background-repeat: no-repeat;
+	left: 875px;
+	top: 25px;
+	position: absolute;
+	width: 545px;
+	height: 600px;
+  }
+ 
+  {% comment %} #onButton {
+	background-color: #E1E1E1;
+	color: black;
+	border: 1px solid #707070;
+  }
+  
+  #onButton:hover {
+	background-color: #A6F4FF;
+	border: 1px solid #26A0DA;
+  } {% endcomment %}
+
+</style>
+  <div class="flex-container flex-row">
+	<div class="flex-container flex-column" style="min-width:800px;">
+	  <div class="flex-container flex-row border" style="max-height: 120px; min-height: 120px; padding-left:160px">
+		<input class="flex-item flex-button" type="button" style="" value="Lab Station" onclick="showTab('labStationTab')"></input>
+		<input class="flex-item flex-button" type="button" style="" value="Training Kit" onclick="showTab('trainingKitTab')"></input>
+		<input class="flex-item flex-button" type="button" style="min-width:220px" value="Spectrum Analyzer" onclick="showTab('spectrumAnalyzerTab')"></input>
+		<!-- <input class="flex-item flex-button" type="button" style="" value="" onclick="showTab('unknownTab')"></input> -->
+	  </div>
+	  <div class="flex-container flex-row border">
+	  
+	  <input type="hidden" id="drawerState" value="" >
+	  <input class="flex-item flex-button" id="labSheetButton" type="button" value="Lab Sheet" onmouseover="openLabSheet()" onclick="closeLabSheet()"></input>
+	    <div class="" id="labSheetTab" onmouseover="document.getElementById('labSheetTab').style.opacity=1" onmouseleave="document.getElementById('labSheetTab').style.opacity=0.05">
+		    <a href="{% static 'LabSheet\LabSheet-1.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-1.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-2.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-2.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-3.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-3.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This sentence is a pangram and is here 
+			because the image couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-4.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-4.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-5.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-5.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-6.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-6.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-7.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-7.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-8.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-8.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+			<a href="{% static 'LabSheet\LabSheet-9.png' %}" target="_blank"><img src="{% static 'LabSheet\LabSheet-9.png' %}" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			Sphinx of black quartz, judge my vow!
+			This pangram is here because the image 
+			couldn't be loaded.
+			"></img></a>
+		  </div>
+		
+		
+	
+	
+		  <input class="flex-item flex-button" id="reportButton" type="button" value="Report" onmouseover="openReport()" onclick="closeReport()"></input>
+		  <div id="reportTab" onmouseover="document.getElementById('reportTab').style.opacity=1" onmouseleave="document.getElementById('reportTab').style.opacity=0.05">
+			<div id="reportDiv" style="background-color:#333333; white-space:pre;" ><b>Lab Report</b>
+Course Name:	<input type="text" id="reportCourseName">
+Lab Exercise:	<input value="ME1000 Lab 10" readonly>	
+Student name:	<input type="text" id="reportStudentName">
+Student No.:	<input type="text" id="reportStudentNo">
+Date:	<input type="Date" id="reportDate">
+Started at:	<input type="Time" id="reportStarted">
+Ended at:	<input type="Time" id="reportEnded">
+
+<b>Lab 5-1	Task 1 - Frequency Synthesizer Characterization</b>
+Data Recording
+<table style="border:1px solid black" class="reportTable">
+	<th>Spectrum Analyzer</th>
+<tr>
+	<td>Start Freq.</td>
+	<td>Start Freq.</td>
+	<td colspan="2">Measured Peak 1</td>
+	<td colspan="2">Measured Peak 2</td>
+	<td colspan="2">Measured Peak 3</td>
+</tr>
+<tr>
+	<td>MHz</td>
+	<td>MHz</td>
+	<td>MHz</td>
+	<td>dBm</td>
+	<td>MHz</td>
+	<td>dBm</td>
+	<td>MHz</td>
+	<td>dBm</td>
+</tr>
+<tr>
+	<td>10</td>
+	<td>3000</td>
+	<td><input type="number" id="reportTable1Field1" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field2" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field3" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field4" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field5" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field6" class="reportTableInput"></td>
+</tr>
+	<td>800</td>
+	<td>900</td>
+	<td><input type="number" id="reportTable1Field7" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field8" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field9" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field10" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field11" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field12" class="reportTableInput"></td>
+<tr>		
+	<td>1600</td>
+	<td>1700</td>
+	<td><input type="number" id="reportTable1Field13" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field14" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field15" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field16" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field17" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field18" class="reportTableInput"></td>
+</tr>
+<tr>
+	<td>2400</td>
+	<td>2500</td>
+	<td><input type="number" id="reportTable1Field19" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field20" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field21" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field22" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field23" class="reportTableInput"></td>
+	<td><input type="number" id="reportTable1Field24" class="reportTableInput"></td>
+</tr>
+</table>
+Attached 
+	Screenshots of SA at various SA settings
+	(Make sure the SA tab is opened)
+	<input type="button" value="Clear Images" onclick="clearChildren('photo1')">
+	<input type="button" value="Screenshot" onclick="screenShot('bodydiv', 'photo1')">
+	<div id="photo1"></div>
+Calculation								
+	1st Harmonic suppression = <input type="text" id="reportCalc1">
+	2nd Harmonic suppression = <input type="text" id="reportCalc2">
+
+Observation & Question								
+	a) Observe the measured peaks reading when the SA 
+	settings are varied. Which setting of the SA gives 
+	a more accurate reading and why?							
+	<textarea name="message" rows="10" cols="50" id="reportOandQ1"></textarea>
+
+	b) Are the measured signals meeting the 
+	specifications: frequency range & resolution, 
+	output power, harmonic suppression?							
+	<input type="text" id="reportOandQ2">
+
+	c) Calculate the LO signal level for 818MHz, Plo 
+	at the output of the Synthesizer circuit given 
+	the following path loss @818MHz from Lab 1 
+	Calibration with Spectrum Analyzer: 							
+	1-meter cable connecting “RF Out” to the SA, 
+	Lcable_sa= 0.99dB	
+	
+	1. What is the power level displayed on the SA 
+	when LO is power on? LO level measured at SA, 
+	Psa_LO @818 MHz 							
+	<input type="text" id="reportOandQ3">							
+
+	2. Determine the output power level of the LO 
+	at “RF Out”. LO output power, Plo (at RF Out port) 
+	= Psa_LO + Lcable_sa 							
+	<input type="text" id="reportOandQ4">
+
+<b>Lab 5-2	Task 2 - Mixer Characterization</b>	
+Attached
+	Screenshot of SA
+	(Make sure the SA tab is opened)
+	<input type="button" value="Clear Images" onclick="clearChildren('photo2')">
+	<input type="button" value="Screenshot" onclick="screenShot('bodydiv', 'photo2')">
+	<div id="photo2"></div>
+Observation & Question								
+	a) Identify all the origin and converted tones 
+	(such as LO, RF or RF ± LO) and their respective 
+	output power levels. 							
+<table class="reportTable">
+	<tr>
+		<td></td>
+		<td>MHz</td>
+		<td>Amplitude</td>
+		<td>Signal measured at SA</td>	
+	</tr>
+	<tr>
+		<td>LO</td>
+		<td><input type="number" id="reportTable2Field1" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable2Field2" class="reportTableInput"></td>
+		<td>Pout_sa_LO</td>
+	</tr>
+	<tr>
+		<td>RF</td>
+		<td><input type="number" id="reportTable2Field3" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable2Field4" class="reportTableInput"></td>
+		<td>Pout_sa_RF</td>
+	</tr>
+	<tr>
+		<td>RF - LO</td>
+		<td><input type="number" id="reportTable2Field5" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable2Field6" class="reportTableInput"></td>
+		<td>Pout_sa_IF</td>
+	</tr>
+</table>
+	b) Determine the actual input and output power of 
+	the mixer, given the following cable losses 
+	measured using the scalar calibration method in 
+	Lab 1.						
+	1. Loss of the 1-meter SMA cable connecting SG to 
+	the circuit, Lcable_sg							
+	2. Loss of the 1-meter SMA cable connecting the SA 
+	to the circuit, Lcable_sa							
+	3. Loss of the 18cm SMA jumper connecting FS to the 
+	mixer, Ljumper							
+<table class="reportTable">
+	<tr>
+		<td>Frequency/MHz</td>
+		<td>Lcable_sg/dB</td>
+		<td>Lcable_sa/dB</td>
+		<td>Ljumper/dB</td>
+	</tr>
+	<tr>
+		<td>50</td>
+		<td>0.21</td>
+		<td>0.21</td>
+		<td>-</td>
+	</tr>
+	<tr>
+		<td>818</td>
+		<td>0.95</td>
+		<td>0.99</td>
+		<td>?</td>
+	</tr>
+	<tr>
+		<td>868</td>
+		<td>1.14</td>
+		<td>1.16</td>
+		<td>-</td>
+	</tr>
+</table>			
+<table class="reportTable">
+	<tr>
+		<td>Signals</td>
+		<td>MHz</td>
+		<td>dBm</td>
+		<td>Remark</td>
+	</tr>
+	<tr>
+		<td>Pin_LO</td>
+		<td><input type="number" id="reportTable3Field1" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable3Field2" class="reportTableInput"></td>
+		<td>get Plo from lab 5-1</td>
+	</tr>
+	<tr>
+		<td>Pin_RF</td>
+		<td><input type="number" id="reportTable3Field3" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable3Field4" class="reportTableInput"></td>
+		<td>get Signal Generator output power</td>
+	</tr>
+	<tr>
+		<td>Pout_RF</td>
+		<td><input type="number" id="reportTable3Field5" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable3Field6" class="reportTableInput"></td>
+		<td>get Pout_sa_RF</td>
+	</tr>
+	<tr>
+		<td>Pout_IF</td>
+		<td><input type="number" id="reportTable3Field7" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable3Field8" class="reportTableInput"></td>
+		<td>get Pout_sa_IF</td>
+	</tr>
+	<tr>
+		<td>Pout_LO</td>
+		<td><input type="number" id="reportTable3Field9" class="reportTableInput"></td>
+		<td><input type="number" id="reportTable3Field10" class="reportTableInput"></td>
+		<td>get Pout_sa_LO</td>
+	</tr>
+</table>			
+<table class="reportTable">
+	<tr>
+		<td>Parameters</td>
+		<td>dB</td>
+		<td>Remark</td>
+	</tr>
+	<tr>
+		<td>Conversion loss</td>
+		<td><input type="number" id="reportTable4Field1" class="reportTableInput"></td>
+		<td>Actual input RF power (dBm) – Actual output RF power (dBm)</td>
+	</tr>
+	<tr>
+		<td>RF-IF isolationm</td>
+		<td><input type="number" id="reportTable4Field2" class="reportTableInput"></td>
+		<td>Actual input RF power (dBm) – Actual output RF power (dBm)</td>
+	</tr>
+	<tr>
+		<td>LO-IF Isolatiom</td>
+		<td><input type="number" id="reportTable4Field3" class="reportTableInput"></td>
+		<td>Actual LO input power (dBm) – Actual LO output power (dBm)</td>
+	</tr>
+</table>
+	c) Verify that the parameters are meeting 
+	the specifications		
+	<textarea name="message" rows="10" cols="50" id="reportOandQ5"/></textarea>
+	<input type="button" value="Save Report" onclick="screenShot('reportDiv', 'none')">
+	<input type="button" value="Save Data" onclick="JSON_IO('write')">
+	<button onclick="document.getElementById('loadDataButton').click()">Load Data</button>
+	<input type="file" id="loadDataButton" style="display:none" accept=".json">
+	        
+	      </div>
+	    </div>
+	  
+	    <div class="flex-item content" id="labStationTab" style="max-width: 1200px">
+		  <a href="{% static 'LabStation\LabStationSetup.png' %}" target="_blank"><img src="{% static 'LabStation\LabStationSetup.png' %}" width="98%" scrolling="no" alt="
+		  Sphinx of black quartz, judge my vow!
+		  This pangram is here because the image 
+		  couldn't be loaded.
+		  "></img></a>
+		</div>
+		<div class="flex-item content" id="trainingKitTab" style="overflow-y:auto">
+		  <div style="width: 1400px; height: 600px;">
+			<div style="position:absolute; width:850px">
+			  <ahref="{% static 'TrainingKit\TrainingKit_physical_not_connected.jpg' %}" target="_blank"><img src="{% static 'TrainingKit\TrainingKit_physical_not_connected.jpg' %}" class="trainingImg startShow" id="p_noconnect" style="white-space:pre-line;" width="100%" scrolling="no" alt="
+			  Sphinx of black quartz, judge my vow!
+			  This pangram is here because the image 
+			  couldn't be loaded.
+			  "></img></a>
+			  <ahref="{% static 'TrainingKit\TrainingKit_physical_off.jpg' %}" target="_blank"><img src="{% static 'TrainingKit\TrainingKit_physical_off.jpg' %}" class="trainingImg" id="p_off" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			  Sphinx of black quartz, judge my vow!
+			  This pangram is here because the image 
+			  couldn't be loaded.
+			  "></img></a>
+			  <ahref="{% static 'TrainingKit\TrainingKit_physical_on.jpg' %}" target="_blank"><img src="{% static 'TrainingKit\TrainingKit_physical_on.jpg' %}" class="trainingImg" id="p_on" style="white-space:pre-line" width="100%" scrolling="no" alt="
+			  Sphinx of black quartz, judge my vow!
+			  This pangram is here because the image 
+			  couldn't be loaded.
+			  "></img></a>
+			</div>
+			<div id="virtualSynth">
+			  <div style="position:absolute; top:35.2%; left:0.8%">
+				<input type="hidden" value="false" id="isConnected">
+				<button type="button" style="width:88px; height:55px; flex-wrap: wrap; text-align: center;" id="connectButton" onclick="document.getElementById('isConnected').value = true; updateTrainingKit()">Connect to RF Trainer</button>
+				<button type="button" style="width:88px; height:55px; flex-wrap: wrap; text-align: center;" id="disconnectButton" onclick="document.getElementById('isConnected').value = false; updateTrainingKit()">Shutdown RF Trainer</button>
+			  </div>
+			  <div style="position:absolute; top:51.5%; left:3.5%; height:80px; width:240px;">
+				<select name="lab" id="lab" style="display:none">
+				  <!-- <option value="L1">L1 T1</option> -->
+				  <option value="L5"> L5 T1</option>
+				</select>
+				<input type="hidden" value="0" id="previouslab"> <!-- Penguin22 | edited line -->
+				<input type="hidden" value=false id="isOn">
+				<button type="button" style="width:240px; height:38px; flex-wrap: wrap; text-align: center;" id="onButton" onclick="" disabled=true>Frequency Synthesizer Off</button>
+				<select name="year" style="position:absolute; top:46px; left:120px;" id="year" disabled=true>
+				  <option value="Freq.Syn-880">880.0</option>
+				  <option value="Freq.Syn-818">818.0</option>
+				  <option value="Freq.Syn-816">816.0</option>
+				</select>
+				<input type="hidden" value="L5" id="previousyear">
+				<script>
+					$("#year").change(function() {
+						updateTrainingKit();
+					});
+					document.getElementById("onButton").onclick = function() {
+						if (document.getElementById("isOn").value == "true") {
+							document.getElementById("onButton").innerHTML = "Frequency Synthesizer Off"
+							//document.getElementById("onButton").style.color = "black";
+							//document.getElementById("onButton").style.border = "1px solid black";
+							document.getElementById("isOn").value = false;
+							document.getElementById("year").disabled = true;
+						} else {
+							document.getElementById("onButton").innerHTML = "Frequency Synthesizer On"
+							//document.getElementById("onButton").style.color = "red";
+							//document.getElementById("onButton").style.border = "1px solid red";
+							document.getElementById("isOn").value = true;
+							document.getElementById("year").disabled = false;
+						};
+						updateTrainingKit()
+					};
+				</script>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
+
+		<div class="flex-item content startShow" id="spectrumAnalyzerTab" style="min-height:600px; min-width:400px;">
+<div id="bodydiv"> <!-- Penguin22 | added line and relevant css-->
+<div id="blockbox"></div> <!-- Penguin20 | added line and relevant css-->
+<div id="graph" class="column wide">
+  <canvas id="salesChart" width="900px" style="background-color:#111111; border-radius:8px"></canvas>
+</div>
+<div class="column right">
+<div class="row">
+<table id="buttonpad">
+<tr>
+  <td><input type="button" id="Frequency" class="button" value="Frequency" style="background-color:gray;color:white;" onclick="showBox('FrequencySet')"/></td>
+  <td><input type="button" id="AutoTune" class="button" value="Auto Tune" style="color:black;" onclick="showBox('')" /></td>
+  <td><input type="button" id="BWAvg" class="button" value="BW/Avg" style="color:black;" onclick="showBox('BWSet')"/></td>
+  <td><input type="button" id="Sweep" class="button" value="Sweep/Trig" style="color:black;" onclick="showBox('')"/></td>
+  <td><input type="button" id="reset" class="button" value="Preset/System" style="background-color:green;color:white;" onclick="showBox('')"/></td>
+</tr>
+<tr>
+  <td><input type="button" id="Frequency1" class="button" value="Span" style="background-color:gray;color:white;" onclick="showBox('FrequencySet')"/></td>
+  <td><input type="button" id="AutoTune1" class="button" value="View/Trace" style="color:black;" onclick="showBox('ViewSet')"/></td>
+  <td><input type="button" id="BWAvg1" class="button" value="Det/Display" style="color:black;" onclick="showBox('')"/></td>
+  <td><input type="button" id="Sweep1" class="button" value="Marker" style="color:black;" onclick="showBox('MarkerSet')"/></td>
+  <td><input type="button" id="pre1" class="button" value="File/Print" style="background-color:gray;color:white;" onclick="showBox('')"/></td>
+</tr>
+<tr>
+  <td><input type="button" id="Amplitude" class="button" value="Amplitude" style="background-color:gray;color:white;" onclick="showBox('AmplitudeSet')"/></td>
+  <td><input type="button" id="MODE" class="button" value="MODE" style="color:black;" onclick="showBox('')"/></td>
+  <td><input type="button" id="Meas" class="button" value="Meas" style="background-color:gray;color:white;" onclick="showBox('')"/></td>
+  <td><input type="button" id="Markern" class="button" value="Marker ->" style="color:black;" onclick="showBox('')"/></td>
+  <td><input type="button" id="Peak" class="button" value="Peak Search" style="color:black;" onclick="showBox('PeakSet')"/></td>
+</tr>
+</table>
+</div>
+<div class="row" id="animatedbox">
+<table id="FrequencySet">
+<tr><td>
+	<label>Frequency/Span:</label>
+</td></tr>
+<form id="filterForm">
+<!--tr>
+  <td>
+    <label for="valopt">Lab</label>
+  </td>
+  <td>
+    <select name="lab" id="lab">
+      <option value="L1">L1 T1</option>
+	  <option value="L5"> L5 T1</option>
+    </select>
+	<input type="hidden" value="0" id="previouslab"> <!-- Penguin22 | edited line --
+  </td>
+</tr>
+<tr>
+  <td>
+    <label for="year">Synth Option</label>
+  </td>
+  <td>
+  <select name="year" id="year">
+    <option value="Freq.Syn-Off">Freq.Syn-Off</option>
+	<option value="Freq.Syn-880">Freq.Syn-880</option>
+    <option value="Freq.Syn-818">Freq.Syn-818</option>    
+  </select>
+  <input type="hidden" value="L1" id="previousyear">
+  </td>
+</tr-->
+
+<!-- tr><td>
+          		  <label for="valopt">Value Option</label>
+					  </td><td>
+  <select name="valopt" id="valopt">
+      <option value="center">Center/Span</option>
+        <option value="startstop">Start/Stop</option>
+  </select></td></tr><tr><td>
+          		  <label for="dlayer"></label>
+					  </td><td>
+  <input type="hidden" name="dlayer" id="dlayer">
+      < option value="Layer1">Detail 1</option>
+        <option value="Layer2">Detail 2</option>
+        <option value="Layer3">Detail 3</option>
+  </input ></td></tr-->
+
+<tr>
+<td><label id="lcenter">Center</label></td>
+<td>
+<input type="hidden" id="valopt" value="center">
+<input type="hidden" id="realcenter" name="realcenter" value="1500000000">
+<input type="number" id="center" name="center" value="1500" step="any">
+</td>
+<td>
+  <select name="centerunit" id="centerunit">
+    <option value="KHz">KHz</option>
+	<option value="MHz" selected="true">MHz</option>
+	<option value="GHz">GHz</option> </select>
+</td>
+</tr>
+
+<tr>
+<td><label>Span</label></td>
+<td>
+<input type="hidden" id="realspan" name="realspan" value="3000000000">
+<input type="number" id="span" name="span" step="any" value="3000">
+</td>
+<td>
+  <select name="spanunit" id="spanunit">
+    <option value="KHz">KHz</option>
+	<option value="MHz" selected="true">MHz</option>
+    <option value="GHz">GHz</option>
+  </select>
+</td>
+</tr>
+
+<tr>
+<td><label>Start</label></td>
+<td>
+<input type="hidden" id="realfstart" name="realfstart" value="0">
+<input type="number" id="fstart" name="fstart" step="any" value="0">
+</td>
+<td>
+  <select name="fstartunit" id="fstartunit">
+    <option value="KHz">KHz</option>
+    <option value="MHz" selected="true">MHz</option>
+    <option value="GHz">GHz</option>
+  </select>
+</td>
+</tr>
+
+<tr>
+<td><label>Stop</label></td>
+<td>
+<input type="hidden" id="realfstop" name="realfstop" value="3000000000">
+<input type="number" id="fstop" name="fstop" step="any" value="3000">
+</td>
+<td>
+  <select name="fstopunit" id="fstopunit">
+    <option value="KHz">KHz</option>
+    <option value="MHz" selected="true">MHz</option>
+    <option value="GHz">GHz</option>
+  </select>
+</td>
+</tr>
+<tr><td>
+  <input type="submit" value="Apply" name="_apply"> 
+</td></tr>
+<tr><td colspan=3>
+  <p style="color:#FF3333" id="notice"></p>
+</td></tr>
+<script>
+		
+		//#Penguin3 | update field has been moved
+		
+                  $("#center").change(function(){
+		if (parseFloat(document.getElementById("center").value) < 2) { //Penguin26 || WARNING: THIS MEANS THAT VALUES CANT GO BELOW TWO
+			document.getElementById("center").value = 2;
+		};
+        if (document.getElementById("centerunit").value  == "KHz") {
+        document.getElementById("realcenter").value = $(this).val() * 1000;
+         }
+        if (document.getElementById("centerunit").value  == "MHz") {
+        document.getElementById("realcenter").value = $(this).val() * 1000000;
+         }
+        if (document.getElementById("centerunit").value  == "GHz") {
+        document.getElementById("realcenter").value = $(this).val() * 1000000000;
+         }
+        var centerf = +document.getElementById("realcenter").value;
+        var spanf = +document.getElementById("realspan").value;
+		if (centerf - (spanf/2) < 0) {
+			spanf += (centerf - (spanf/2))*2
+			updateField("span", "spanunit", spanf);
+		};
+        var startf = centerf - (spanf/2);
+        //if(startf<0) { startf=0;}
+        var stopf = centerf + (spanf/2);
+        document.getElementById("realfstart").value = startf;
+        document.getElementById("realfstop").value = stopf;
+		document.getElementById("realspan").value = spanf;
+		updateField("fstop", "fstopunit", stopf);
+		updateField("fstart", "fstartunit", startf);
+		/* this is how it used to look
+        if (document.getElementById("fstopunit").value == "KHz") {
+        document.getElementById("fstop").value = stopf /1000;
+         }
+        if (document.getElementById("fstopunit").value == "MHz") {
+        document.getElementById("fstop").value = stopf /1000000;
+         }
+        if (document.getElementById("fstopunit").value == "GHz") {
+        document.getElementById("fstop").value = stopf /1000000000;
+         }
+		 */
+});
+
+                  $("#span").change(function(){
+		if (parseFloat(document.getElementById("span").value) < 2) {
+			document.getElementById("span").value = 2;
+		};
+        if (document.getElementById("spanunit").value  == "KHz") {
+        document.getElementById("realspan").value = $(this).val() * 1000;
+         }
+        if (document.getElementById("spanunit").value  == "MHz") {
+        document.getElementById("realspan").value = $(this).val() * 1000000;
+         }
+        if (document.getElementById("spanunit").value  == "GHz") {
+        document.getElementById("realspan").value = $(this).val() * 1000000000;
+         }
+        var centerf = +document.getElementById("realcenter").value;
+		var spanf = +document.getElementById("realspan").value;
+		if (centerf - (spanf/2) < 0) {
+			centerf -= (centerf - (spanf/2))
+			updateField("center", "centerunit", centerf);
+		};
+         
+        var startf = centerf - (spanf/2);
+        //if(startf<0) { startf=0;}
+        var stopf = centerf + (spanf/2);
+        document.getElementById("realfstart").value = startf;
+        document.getElementById("realfstop").value = stopf;
+		document.getElementById("realcenter").value = spanf;
+        updateField("fstop", "fstopunit", stopf);
+		updateField("fstart", "fstartunit", startf);
+});
+
+                  $("#fstart").change(function(){
+		//Penguin20 | added block {
+		if (parseFloat(document.getElementById("fstart").value) >= parseFloat(document.getElementById("fstop").value)-1) {
+			document.getElementById("fstart").value = parseFloat(document.getElementById("fstop").value) - 2;
+		};
+		//Penguin20 }
+		//Penguin19 | added block {
+		if (parseFloat(document.getElementById("fstart").value) < 0) {
+			document.getElementById("fstart").value = 0;
+		};
+		//Penguin19 }
+		if (document.getElementById("fstartunit").value  == "KHz") {
+        document.getElementById("realfstart").value = $(this).val() * 1000;
+         }
+        if (document.getElementById("fstartunit").value  == "MHz") {
+        document.getElementById("realfstart").value = $(this).val() * 1000000;
+         }
+        if (document.getElementById("fstartunit").value  == "GHz") {
+        document.getElementById("realfstart").value = $(this).val() * 1000000000;
+         }
+		 var startf = +document.getElementById("realfstart").value;
+         var stopf = +document.getElementById("realfstop").value;
+         var centerf = (startf + stopf)/2;
+         var spanf = stopf - startf;
+		 document.getElementById("realcenter").value = centerf;
+         document.getElementById("realspan").value = spanf;
+		updateField("center", "centerunit", centerf);
+		updateField("span", "spanunit", spanf);
+});
+
+
+                  $("#fstop").change(function(){
+		//Penguin20 | added block {
+		if (parseFloat(document.getElementById("fstop").value) <= parseFloat(document.getElementById("fstart").value)+1) {
+			document.getElementById("fstop").value = parseFloat(document.getElementById("fstart").value) + 2;
+		};
+		if (parseFloat(document.getElementById("fstop").value) < 2) {
+			document.getElementById("fstop").value = 2;
+		};
+		//Penguin20 }
+        if (document.getElementById("fstopunit").value  == "KHz") {
+        document.getElementById("realfstop").value = $(this).val() * 1000;
+         }
+        if (document.getElementById("fstopunit").value  == "MHz") {
+        document.getElementById("realfstop").value = $(this).val() * 1000000;
+         }
+        if (document.getElementById("fstopunit").value  == "GHz") {
+        document.getElementById("realfstop").value = $(this).val() * 1000000000;
+         }
+		 var startf = +document.getElementById("realfstart").value;
+         var stopf = +document.getElementById("realfstop").value;
+         var centerf = (startf + stopf)/2;
+         var spanf = stopf - startf;
+		 document.getElementById("realcenter").value = centerf;
+         document.getElementById("realspan").value = spanf;
+		updateField("center", "centerunit", centerf);
+		updateField("span", "spanunit", spanf);
+});
+
+
+
+                  $("#fstopunit").change(function(){
+                  var centerf = +document.getElementById("realfstop").value;
+        if ($(this).val() == "KHz") {
+        document.getElementById("fstop").value = centerf /1000;
+         }
+        if ($(this).val() == "MHz") {
+        document.getElementById("fstop").value = centerf /1000000;
+         }
+        if ($(this).val() == "GHz") {
+        document.getElementById("fstop").value = centerf /1000000000;
+         }
+});
+
+                  $("#fstartunit").change(function(){
+                  var centerf = +document.getElementById("realfstart").value;
+        if ($(this).val() == "KHz") {
+        document.getElementById("fstart").value = centerf /1000;
+         }
+        if ($(this).val() == "MHz") {
+        document.getElementById("fstart").value = centerf /1000000;
+         }
+        if ($(this).val() == "GHz") {
+        document.getElementById("fstart").value = centerf /1000000000;
+         }
+});
+
+                  $("#spanunit").change(function(){
+                  var centerf = +document.getElementById("realspan").value;
+        if ($(this).val() == "KHz") {
+        document.getElementById("span").value = centerf /1000;
+         }
+        if ($(this).val() == "MHz") {
+        document.getElementById("span").value = centerf /1000000;
+         }
+        if ($(this).val() == "GHz") {
+        document.getElementById("span").value = centerf /1000000000;
+         }
+});
+
+                  $("#centerunit").change(function(){
+                  var centerf = +document.getElementById("realcenter").value;
+        if ($(this).val() == "KHz") {
+        document.getElementById("center").value = centerf /1000;
+         }
+        if ($(this).val() == "MHz") {
+        document.getElementById("center").value = centerf /1000000;
+         }
+        if ($(this).val() == "GHz") {
+        document.getElementById("center").value = centerf /1000000000;
+         }
+});
+        //document.getElementById('lcenter').innerHTML ='CenterF';
+         //$("#lcenter").prop('innerHTML', 'Center');
+         //$("#lspan").prop('innerHTML', 'Span');
+
+        //else {
+        //document.getElementById('lcenter').innerHTML ='Start Frequency';
+         //$("#lcenter").prop('innerHTML', 'Start Frequency');
+         //$("#lspan").prop('innerHTML', 'Stop Frequency');
+       //it means this value of select_option  is empty
+       // }
+
+</script>
+</form>
+</table>
+
+<table id="AmplitudeSet">
+  <tr><td>
+    <label>Amplitude:</label>
+  </td></tr>
+  <form id="ampForm"><!-- #Penguin6 added id -->
+  <tr>
+    <td><label>Ref Level</label></td>
+	<td>
+	  <input type="number" value="0.0" step="0.1" id="reflevel">
+	  <select id="reflevelunit"> <!-- Penguin22 | added line -->
+	    <option>dBm</option>
+      </select>
+	</td>
+  </tr>
+  <tr>
+	<td><label>Attenuation</label></td>
+	<td>
+	  <input type="number" value="20" class="hidearrows" id="attenuation">
+	  <label>dB</label>
+	</td>
+    <td><input type="checkbox" id="attenuationcheckbox" checked="true" onclick="return false;"><label for="attenuationcheckbox">Auto</label></td>
+  </tr>
+  <tr>
+    <td><label>Scale/Div</label></td>
+    <td><select id="scalediv" value="10dB">
+      <option value="10dB">10dB</option>
+    </select></td>
+  </tr>
+  <tr>
+    <td><label>Input Z</label></td>
+	<td>
+	  <input type="radio" id="inputzradio1" name="inputzradio" checked="true"><label for="inputzradio1">50 ohm</label>
+      <!--input type="radio" id="inputzradio2" name="inputzradio"><label for="inputzradio2">75 ohm</label-->
+      <!--input type="radio" id="inputzradio3" name="inputzradio" ><label for="inputzradio3">100 ohm</label-->
+	</td>
+  </tr>
+  <tr>
+    <td><label>Scale Type</label></td>
+	<td>
+	  <input type="radio" id="scaletyperadio1" name="scaletyperadio" checked="true" value="Log"><label for="scaletyperadio1">Log</label> <!-- Penguin22 | edited line -->
+	  <!--input type="radio" id="scaletyperadio2" name="scaletyperadio"><label for="scaletyperadio2">Lin</label-->
+	  <!--input type="radio" id="scaletyperadio3" name="inputzradio" ><label for="scaletyperadio3">100 ohm</label-->
+	</td>
+  </tr>
+  <tr><td>
+    <input type="submit" value="Apply" name="_apply">
+  </td></tr>
+  
+<script>
+</script>
+
+</form> 
+</table>
+
+<table id="BWSet">
+  <tr><td>
+    <label>BW/Avg:</label>
+  </td></tr>
+  <form id="bwForm"> <!--Penguin20 | added line -->
+  <tr>
+	<td><label>Res BW</label></td>
+	<td>
+	  <input type="number" value="1.000000" class="hidearrows" id="resbw">
+	  <select>
+        <option>MHz</option>
+      </select>
+	</td>
+    <td><input type="checkbox" id="resBWcheckbox" checked="true" onclick="return false;"><label for="resBWcheckbox">Auto</label></td>
+  </tr>
+  <tr>
+	<td><label>Video BW</label></td>
+	<td>
+	  <input type="number" value="1.000000" class="hidearrows" id="videobw">
+	  <select>
+        <option>MHz</option>
+      </select>
+	</td>
+    <td><input type="checkbox" id="videoBWcheckbox" checked="true" onclick="return false;"><label for="videoBWcheckbox">Auto</label></td>
+  </tr>
+  <tr>
+	<td><label>VBW/RBW</label></td>
+	<td>
+	  <input type="number" value="1.000000" class="hidearrows" id="vbwrbw">
+	</td>
+    <td><input type="checkbox" id="VBWRBWcheckbox" checked="true" onclick="return false;"><label for="VBWRBWcheckbox">Auto</label></td>
+  </tr>
+  <tr><td>
+    <input type="submit" value="Apply" name="_apply">
+  </td></tr>
+  
+<script>
+</script>
+
+</form>
+</table>
+<!-- Penguin18 | removed redundancy -->
+<table id="MarkerSet">
+  <tr><td>
+    <label>Marker:</label>
+  </td></tr>
+  <form id="markerForm">
+  <input type="hidden" value=0 id="currentmarker">
+  <tr>
+    <td><label>Markers</label></td>
+    <td><label>Frequency(MHz)</label></td>
+    <td><label>Amplitude(dBm)</label></td>
+  </tr>
+  
+  <tr>
+    <td>
+	  <input type="checkbox" id="markercheckbox1" class="markercheckbox">
+	  <label>Marker 1</label>
+	</td>
+	<td>
+	  <input type="number" value="0.000" step=0.001 id="markerfrequency1" class="markerfrequency"><!-- #Penguin | Edit:step=0.01 Added:class="markerfrequency" added-->
+	  <input type="hidden" id="markerminmax1" min="" max="">
+	</td>
+	<td>
+	  <input type="number" value ="0.00" id="markeramplitude1" readonly> </input>
+	</td>
+  </tr>
+  <tr>
+    <td>
+	  <input type="checkbox" id="markercheckbox2" class="markercheckbox">
+	  <label>Marker 2</label>
+	</td>
+	<td>
+	  <input type="number" value="0.000" step=0.001 id="markerfrequency2" class="markerfrequency"><!-- #Penguin | Edit:step=0.01 Added:class="markerfrequency"--> <!-- Penguin10 | oops forgot to remove min max -->
+	  <input type="hidden" id="markerminmax2" min="" max="">
+	</td>
+	<td>
+	  <input type="number" value ="0.00" id="markeramplitude2" readonly> </input>
+	</td>
+  </tr>
+  <tr>
+    <td>
+	  <input type="checkbox" id="markercheckbox3" class="markercheckbox">
+	  <label>Marker 3</label>
+	</td>
+	<td>
+	  <input type="number" value="0.000" step=0.001 id="markerfrequency3" class="markerfrequency"><!-- #Penguin | Edit:step=0.01 Added:class="markerfrequency"--> <!-- Penguin10 | oops forgot to remove min max -->
+	  <input type="hidden" id="markerminmax3" min="" max="">
+	</td>
+	<td>
+	  <input type="number" value ="0.00" id="markeramplitude3" readonly> </input>
+	</td>
+  </tr>
+  <tr>
+    <td>
+	  <input type="checkbox" id="markercheckbox4" class="markercheckbox">
+	  <label>Marker 4</label>
+	</td>
+	<td>
+	  <input type="number" value="0.000" step=0.001 id="markerfrequency4" class="markerfrequency"><!-- #Penguin | Edit:step=0.01 Added:class="markerfrequency"--> <!-- Penguin10 | oops forgot to remove min max -->
+	  <input type="hidden" id="markerminmax4" min="" max="">
+	</td>
+	<td>
+	  <input type="number" value ="0.00" id="markeramplitude4" readonly> </input>
+	</td>
+  </tr>
+
+  
+  <tr><td>
+    <input type="submit" value="Clear All" name="_clearmarker"><!-- #Penguin | Edit:value="Clear All" name="_clearmarker"-->
+  </td></tr>
+  
+<script>
+//#Penguin | added from here {
+$(".markerfrequency").change(function(){	
+	updateMarker();
+	});
+//Penguin18 | added block {
+$("#markercheckbox1").change(function() {
+	if (document.getElementById("markercheckbox1").checked) document.getElementById("currentmarker").value = 1; //Penguin20 | edited line
+});
+$("#markercheckbox2").change(function() {
+	if (document.getElementById("markercheckbox2").checked) document.getElementById("currentmarker").value = 2; //Penguin20 | edited line
+});
+$("#markercheckbox3").change(function() {
+	if (document.getElementById("markercheckbox3").checked) document.getElementById("currentmarker").value = 3; //Penguin20 | edited line
+});
+$("#markercheckbox4").change(function() {
+	if (document.getElementById("markercheckbox4").checked) document.getElementById("currentmarker").value = 4; //Penguin20 | edited line
+});
+//Penguin18 }
+$(".markercheckbox").change(function(){	
+	updateMarker();
+	});
+//#Penguin3 | Modified and moved duplicate stuff as a function and called this function instead
+function updateMarker() {
+	const center = $("#center").val();
+	const span = $("#span").val();
+	const start = $("#fstart").val();
+	const stop = $("#fstop").val();
+	const valopt = $("#valopt").val();
+	const lab = $("#lab").val();
+	const dlayer = $("#dlayer").val();
+	var year = $("#year").val();
+	var marker_x_value1 = "None";
+	var marker_x_value2 = "None";
+	var marker_x_value3 = "None";
+	var marker_x_value4 = "None";
+	
+	//Penguin13 | Edited block | How did this work for so long? "880" > "3000"?  This bug has been here since penguin3! (actually it worked last time because we only tested values from 814 to 828) {
+	//#Penguin6 | Changed order of the frequency and amplitude block (First change min max value of frequency, then only get amplitude. Previously it was the other way round) 
+	//#Penguin3 | min max by html doensn't work so like this instead {
+	if (parseFloat(document.getElementById("markerfrequency1").value) > parseFloat(document.getElementById("markerminmax1").max)) {
+		document.getElementById("markerfrequency1").value = document.getElementById("markerminmax1").max;
+		//#Penguin6 | Removed redundant console.log
+	};
+	if (parseFloat(document.getElementById("markerfrequency2").value) > parseFloat(document.getElementById("markerminmax2").max)) {
+		document.getElementById("markerfrequency2").value = document.getElementById("markerminmax2").max;
+	};
+	if (parseFloat(document.getElementById("markerfrequency3").value) > parseFloat(document.getElementById("markerminmax3").max)) {
+		document.getElementById("markerfrequency3").value = document.getElementById("markerminmax3").max;
+	};
+	if (parseFloat(document.getElementById("markerfrequency4").value) > parseFloat(document.getElementById("markerminmax4").max)) {
+		document.getElementById("markerfrequency4").value = document.getElementById("markerminmax4").max;
+	};
+	if (parseFloat(document.getElementById("markerfrequency1").value) < parseFloat(document.getElementById("markerminmax1").min)) {
+		document.getElementById("markerfrequency1").value = document.getElementById("markerminmax1").min;
+	};
+	if (parseFloat(document.getElementById("markerfrequency2").value) < parseFloat(document.getElementById("markerminmax2").min)) {
+		document.getElementById("markerfrequency2").value = document.getElementById("markerminmax2").min;
+	};
+	if (parseFloat(document.getElementById("markerfrequency3").value) < parseFloat(document.getElementById("markerminmax3").min)) {
+		document.getElementById("markerfrequency3").value = document.getElementById("markerminmax3").min;
+	};
+	if (parseFloat(document.getElementById("markerfrequency4").value) < parseFloat(document.getElementById("markerminmax4").min)) {
+		document.getElementById("markerfrequency4").value = document.getElementById("markerminmax4").min;
+	};
+	//#Penguin3 | to here }
+	//Penguin13 }
+	
+	document.getElementById("peaknum").value = "None"; //Penguin12 | Added line | Disable override
+	
+	if (document.getElementById("markercheckbox1").checked == true) {
+		marker_x_value1 = document.getElementById("markerfrequency1").value;
+		};
+	if (document.getElementById("markercheckbox2").checked == true) {
+		marker_x_value2 = document.getElementById("markerfrequency2").value;
+		};
+	if (document.getElementById("markercheckbox3").checked == true) {
+		marker_x_value3 = document.getElementById("markerfrequency3").value;
+		};
+	if (document.getElementById("markercheckbox4").checked == true) {
+		marker_x_value4 = document.getElementById("markerfrequency4").value;
+		};
+
+	const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+	if ($("#isConnected").val() == "false") {
+		year = "Disconnected";
+	} else if ($("#isOn").val() == "false") {
+		year = "Freq.Syn-Off";
+	};
+	
+	const peaknum = document.getElementById("peaknum").value;
+	const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+	loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //Penguin12 | Added peaknum
+	
+	
+	
+	/* Doesnt work because deleting a number makes it below minimum e.g target = 819, current value = 818, delete number eight = 81 , function activates and turns it to 818 FAIL
+	//#Penguin3 | added from here {
+	
+	document.getElementsByClassName("markerfrequency")[0].oninput = function () {
+		var max = parseInt(this.max);
+		var min = parseInt(this.min);
+		if (parseInt(this.value) > max) {
+			this.value = max; 
+		}
+		if (parseInt(this.value) < min) {
+			this.value = min;
+		}
+    }
+	
+	//#Penguin3 | to here }
+	*/
+}
+
+
+//#Penguin | to here }
+</script>
+
+</form>
+</table>
+
+<table id="PeakSet" cellspacing=5>
+  <tr><td>
+    <label>PeakSearch:</label>
+  </td></tr>
+  <form>
+  <tr>
+    <td><input type="button" class="button" value="Peak Search" id="peaksearch"/></td>
+	<input type="hidden" value="None" id="peaknum" min=0 max=3000 /> <!-- Penguin12 | Added storing peaknum -->
+    <td><input type="button" class="button" value="Next Pk Left" id="nextpkleft"/></td>
+  </tr>
+   <tr>
+    <td><input type="button" class="button" value="Next Peak" id="nextpeak"/></td>
+    <td><input type="button" class="button" value="Min Search" id="minsearch"/></td>
+  </tr>
+   <tr>
+    <td><input type="button" class="button" value="Next Pk Right" id="nextpkright"/></td>
+  </tr>
+  <tr><td>
+    <!--Penguin13 | Removed Line | Load button removed -->
+  </td></tr>
+  
+<script>
+//Penguin12 | Added Block {
+document.getElementById('peaksearch').onclick = function() {
+	updatePeak("MaxPeak"); //Penguin13 | Added line | changed parameter to "MaxPeak". "None" is for checking whether input is by button press or marker field input so new info is required
+};
+//Penguin13 | Added Block {
+document.getElementById('minsearch').onclick = function() {
+	updatePeak("Min"); //Penguin13 | Added line | changed parameter to "MinPeak". "None" is for checking whether input is by button press or marker field input so new info is required
+};
+//Penguin13 }
+document.getElementById('nextpeak').onclick = function() {
+	updatePeak("NextPeak."+document.getElementById("peaknum").value); //Penguin14 | Edited line | Conveys the fact its a "next peak" and also the current peak value seperated by '.'
+};
+
+document.getElementById('nextpkright').onclick = function() {
+	updatePeak(1);
+};
+document.getElementById('nextpkleft').onclick = function() {
+	updatePeak(-1);
+};
+
+
+function updatePeak(num) {
+	const center = $("#center").val();
+	const span = $("#span").val();
+	const start = $("#fstart").val();
+	const stop = $("#fstop").val();
+	const valopt = $("#valopt").val();
+	const lab = $("#lab").val();
+	const dlayer = $("#dlayer").val();
+	var year = $("#year").val();
+	var marker_x_value1 = "None";
+	var marker_x_value2 = "None";
+	var marker_x_value3 = "None";
+	var marker_x_value4 = "None";
+	
+	//Penguin20 | added block {
+	if (document.getElementById("markercheckbox2").checked == false && document.getElementById("markercheckbox3").checked == false && document.getElementById("markercheckbox4").checked == false) {
+		document.getElementById("markercheckbox1").checked = true; //Penguin13 | Added Line | Automatically add marker when buttons clicked
+	};
+	//Penguin20 }
+	if (document.getElementById("peaknum").value == "None") document.getElementById("peaknum").value = 0;
+	
+	//Penguin13 | Added block / Moved another block into this block | do not calc if min or max peak so we can send it to views.py {
+	console.log(num);
+	
+	//Penguin14 | Flipped if function {
+	if (num == 	1 || num == -1){ //Penguin14 | Edited so it sends anything to views.py if not 1 or -1
+		document.getElementById("peaknum").value = parseInt(document.getElementById("peaknum").value) + num;
+		
+		if (document.getElementById("peaknum").value > document.getElementById("peaknum").max) {
+			document.getElementById("peaknum").value = document.getElementById("peaknum").max;
+		};
+		if (document.getElementById("peaknum").value < document.getElementById("peaknum").min) {
+			document.getElementById("peaknum").value = document.getElementById("peaknum").min;
+		};
+	} else {
+		document.getElementById("peaknum").value = num;
+	};
+	//Penguin14 }
+	//Penguin13 }
+	
+	changemarker = true; //Penguin20 | added line
+	
+	if (document.getElementById("markercheckbox1").checked == true) {
+		marker_x_value1 = document.getElementById("markerfrequency1").value;
+		};
+	if (document.getElementById("markercheckbox2").checked == true) {
+		marker_x_value2 = document.getElementById("markerfrequency2").value;
+		};
+	if (document.getElementById("markercheckbox3").checked == true) {
+		marker_x_value3 = document.getElementById("markerfrequency3").value;
+		};
+	if (document.getElementById("markercheckbox4").checked == true) {
+		marker_x_value4 = document.getElementById("markerfrequency4").value;
+		};
+	
+	const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+	if ($("#isConnected").val() == "false") {
+		year = "Disconnected";
+	} else if ($("#isOn").val() == "false") {
+		year = "Freq.Syn-Off";
+	};
+	
+	const peaknum = document.getElementById("peaknum").value;
+	const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+	loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line//Penguin12 | Added peaknum
+	
+
+}
+//Penguin12 }
+</script>
+
+</form>
+</table>
+
+<table id="ViewSet" cellspacing=5>
+  <tr><td>
+    <label>View/Trace:</label>
+  </td></tr>
+  <form>
+	<input type="hidden" value=0 id="downloading">
+    <tr>
+      <td>
+	    <input type="checkbox" id="tracecheckbox1" class="tracecheckbox"><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>Trace 1</label>
+	  </td>
+	  <td>
+	    <input type="checkbox" id="viewcheckbox1" class="viewcheckbox" disabled=true><!--Penguin16 | Edited Line | made it part of a class-->
+	    <label>View</label>
+	  </td>
+	  <td><input type="button" class="button" value="Export Data" id="exportdata1" disabled=true/></td>
+    </tr>
+    <tr>
+      <td>
+	    <input type="checkbox" id="tracecheckbox2" class="tracecheckbox"><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>Trace 2</label>
+	  </td>
+	  <td>
+	    <input type="checkbox" id="viewcheckbox2" class="viewcheckbox" disabled=true><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>View</label>
+	  </td>
+	  <td><input type="button" class="button" value="Export Data" id="exportdata2" disabled=true/></td>
+    </tr>
+	<tr>
+      <td>
+	    <input type="checkbox" id="tracecheckbox3" class="tracecheckbox"><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>Trace 3</label>
+	  </td>
+	  <td>
+	    <input type="checkbox" id="viewcheckbox3" class="viewcheckbox" disabled=true><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>View</label>
+	  </td>
+	  <td><input type="button" class="button" value="Export Data" id="exportdata3" disabled=true/></td>
+    </tr>
+	<tr>
+      <td>
+	    <input type="checkbox" id="tracecheckbox4" class="tracecheckbox"><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>Trace 4</label>
+	  </td>
+	  <td>
+	    <input type="checkbox" id="viewcheckbox4" class="viewcheckbox" disabled=true><!--Penguin16 | Edited Line | made it part of a class--> 
+	    <label>View</label>
+	  </td>
+	  <td><input type="button" class="button" value="Export Data" id="exportdata4" disabled=true/></td>
+    </tr>
+	<!--Penguin16 | Removed Line | no need submit load--> 
+  
+<script>
+//Penguin16/15 | Added Block / Edited Block {
+document.getElementById('exportdata1').onclick = function() {
+	updateExport(1);
+};
+document.getElementById('exportdata2').onclick = function() {
+	updateExport(2);
+};
+document.getElementById('exportdata3').onclick = function() {
+	updateExport(3);
+};
+document.getElementById('exportdata4').onclick = function() {
+	updateExport(4);
+};
+
+$("#tracecheckbox1").change(function(){
+	if (document.getElementById('tracecheckbox1').checked == true)
+	{
+		document.getElementById('viewcheckbox1').disabled = false; //Penguin18 | commented line
+		document.getElementById('exportdata1').disabled = false; //Penguin18 | commented line
+	}
+	else
+	{
+		document.getElementById('viewcheckbox1').disabled = true; //Penguin18 | commented line
+		document.getElementById('viewcheckbox1').checked = false; //Penguin26 | added line
+		document.getElementById('exportdata1').disabled = true; //Penguin18 | commented line
+	}
+	updateTrace();
+});
+$("#tracecheckbox2").change(function(){
+	if (document.getElementById('tracecheckbox2').checked == true)
+	{
+		document.getElementById('viewcheckbox2').disabled = false; //Penguin18 | commented line
+		document.getElementById('exportdata2').disabled = false; //Penguin18 | commented line
+	}
+	else
+	{
+		document.getElementById('viewcheckbox2').disabled = true; //Penguin18 | commented line
+		document.getElementById('viewcheckbox2').checked = false; //Penguin26 | added line
+		document.getElementById('exportdata2').disabled = true; //Penguin18 | commented line
+	}
+	updateTrace();
+});
+$("#tracecheckbox3").change(function(){
+	if (document.getElementById('tracecheckbox3').checked == true)
+	{
+		document.getElementById('viewcheckbox3').disabled = false; //Penguin18 | commented line
+		document.getElementById('exportdata3').disabled = false; //Penguin18 | commented line
+	}
+	else
+	{
+		document.getElementById('viewcheckbox3').disabled = true; //Penguin18 | commented line
+		document.getElementById('viewcheckbox3').checked = false; //Penguin26 | added line
+		document.getElementById('exportdata3').disabled = true; //Penguin18 | commented line
+	}
+	updateTrace();
+});
+$("#tracecheckbox4").change(function(){
+	if (document.getElementById('tracecheckbox4').checked == true)
+	{
+		document.getElementById('viewcheckbox4').disabled = false; //Penguin18 | commented line
+		document.getElementById('exportdata4').disabled = false; //Penguin18 | commented line
+	}
+	else
+	{
+		document.getElementById('viewcheckbox4').disabled = true; //Penguin18 | commented line
+		document.getElementById('viewcheckbox4').checked = false; //Penguin26 | added line
+		document.getElementById('exportdata4').disabled = true; //Penguin18 | commented line
+	}
+	updateTrace();
+});
+$(".viewcheckbox").change(function(){	
+	updateTrace();
+});
+
+function updateExport(num) {
+	document.getElementById('downloading').value = num;
+	updateTrace();
+};
+function updateTrace() {
+	const center = $("#center").val();
+	const span = $("#span").val();
+	const start = $("#fstart").val();
+	const stop = $("#fstop").val();
+	const valopt = $("#valopt").val();
+	const lab = $("#lab").val();
+	const dlayer = $("#dlayer").val();
+	var year = $("#year").val();
+	var marker_x_value1 = "None";
+	var marker_x_value2 = "None";
+	var marker_x_value3 = "None";
+	var marker_x_value4 = "None";
+	
+	if (document.getElementById("markercheckbox1").checked == true) {
+		marker_x_value1 = document.getElementById("markerfrequency1").value;
+		};
+	if (document.getElementById("markercheckbox2").checked == true) {
+		marker_x_value2 = document.getElementById("markerfrequency2").value;
+		};
+	if (document.getElementById("markercheckbox3").checked == true) {
+		marker_x_value3 = document.getElementById("markerfrequency3").value;
+		};
+	if (document.getElementById("markercheckbox4").checked == true) {
+		marker_x_value4 = document.getElementById("markerfrequency4").value;
+		};
+		
+	const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+	if ($("#isConnected").val() == "false") {
+		year = "Disconnected";
+	} else if ($("#isOn").val() == "false") {
+		year = "Freq.Syn-Off";
+	};
+	
+	const peaknum = document.getElementById("peaknum").value;
+	const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+	loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line
+}
+//Penguin16/15 }
+</script>
+	
+</form>
+</table>
+
+</div>
+      <script>
+ 		//Penguin26| moved block {
+		document.getElementById('reset').onclick = function() {
+			const center = $("#center").val();
+			const span = $("#span").val();
+			const start = $("#fstart").val();
+			const stop = $("#fstop").val();
+			const valopt = $("#valopt").val();
+			const lab = $("#lab").val(); //Penguin20 | edited line
+			const dlayer = $("#dlayer").val();
+			var year = "Freq.Syn-Off";
+            console.log("🚀 ~ file: statistics.html ~ line 1602 ~ document.getElementById ~ Freq.Syn-Off", Freq.Syn-Off)
+			var marker_x_value1 = "None";
+			var marker_x_value2 = "None";
+			var marker_x_value3 = "None";
+			var marker_x_value4 = "None";
+			
+			//document.getElementById("lab").value = "L5"; //Penguin20 | commented line
+			//document.getElementById("year").value = "Freq.Syn-Off"; //Penguin21 | commented line
+			document.getElementById("center").value = 0;
+			document.getElementById("span").value = 0;
+			document.getElementById("fstart").value = 0;
+			document.getElementById("fstop").value = 0;
+			document.getElementById("previouslab").value = 0;
+			document.getElementById("previousyear").value = 0;
+			
+			//Penguin20 | added block {
+			document.getElementById("markercheckbox1").checked = false;
+			document.getElementById("markercheckbox2").checked = false;
+			document.getElementById("markercheckbox3").checked = false;
+			document.getElementById("markercheckbox4").checked = false;
+			document.getElementById("tracecheckbox1").checked = false;
+			document.getElementById("tracecheckbox2").checked = false;
+			document.getElementById("tracecheckbox3").checked = false;
+			document.getElementById("tracecheckbox4").checked = false;
+			document.getElementById("viewcheckbox1").checked = false;
+			document.getElementById("viewcheckbox2").checked = false;
+			document.getElementById("viewcheckbox3").checked = false;
+			document.getElementById("viewcheckbox4").checked = false;
+			document.getElementById("reflevel").checked = 0.0;
+			document.getElementById("peaknum").checked = 0;
+			//Penguin20 }
+			
+			const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+			if ($("#isConnected").val() == "false") {
+				year = "Disconnected";
+			} else if ($("#isOn").val() == "false") {
+				year = "Freq.Syn-Off";
+			};
+			
+			const peaknum = document.getElementById("peaknum").value;
+			const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+			loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //Penguin12 | Added peaknum
+			
+		};
+		//Penguin26 }
+		
+		//Penguin26 | added block {
+		document.getElementById("loadDataButton").addEventListener('change', (event) => {
+			const reader = new FileReader();
+			reader.readAsText(event.target.files[0], "UTF-8");
+			document.getElementById("loadDataButton").value = null;
+			reader.onload = (event) => {
+				JSON_IO(event.target.result);
+			}
+		});
+		
+		//Penguin 26 }
+		//Penguin26 | JSON handling function {
+		function JSON_IO(WriteOrData) {
+			if (WriteOrData == 'write') {
+				const data = {
+					"reportCourseName": document.getElementById("reportCourseName").value,
+					"reportStudentName": document.getElementById("reportStudentName").value,
+					"reportStudentNo": document.getElementById("reportStudentNo").value,
+					"reportDate": document.getElementById("reportDate").value,
+					"reportStarted": document.getElementById("reportStarted").value,
+					"reportEnded": document.getElementById("reportEnded").value,
+					"reportTable1Field1": document.getElementById("reportTable1Field1").value,
+					"reportTable1Field2": document.getElementById("reportTable1Field2").value,
+					"reportTable1Field3": document.getElementById("reportTable1Field3").value,
+					"reportTable1Field4": document.getElementById("reportTable1Field4").value,
+					"reportTable1Field5": document.getElementById("reportTable1Field5").value,
+					"reportTable1Field6": document.getElementById("reportTable1Field6").value,
+					"reportTable1Field7": document.getElementById("reportTable1Field7").value,
+					"reportTable1Field8": document.getElementById("reportTable1Field8").value,
+					"reportTable1Field9": document.getElementById("reportTable1Field9").value,
+					"reportTable1Field10": document.getElementById("reportTable1Field10").value,
+					"reportTable1Field11": document.getElementById("reportTable1Field11").value,
+					"reportTable1Field12": document.getElementById("reportTable1Field12").value,
+					"reportTable1Field13": document.getElementById("reportTable1Field13").value,
+					"reportTable1Field14": document.getElementById("reportTable1Field14").value,
+					"reportTable1Field15": document.getElementById("reportTable1Field15").value,
+					"reportTable1Field16": document.getElementById("reportTable1Field16").value,
+					"reportTable1Field17": document.getElementById("reportTable1Field17").value,
+					"reportTable1Field18": document.getElementById("reportTable1Field18").value,
+					"reportTable1Field19": document.getElementById("reportTable1Field19").value,
+					"reportTable1Field20": document.getElementById("reportTable1Field20").value,
+					"reportTable1Field21": document.getElementById("reportTable1Field21").value,
+					"reportTable1Field22": document.getElementById("reportTable1Field22").value,
+					"reportTable1Field23": document.getElementById("reportTable1Field23").value,
+					"reportTable1Field24": document.getElementById("reportTable1Field24").value,
+					"reportCalc1": document.getElementById("reportCalc1").value,
+					"reportCalc2": document.getElementById("reportCalc2").value,
+					"reportOandQ1": document.getElementById("reportOandQ1").value,
+					"reportOandQ2": document.getElementById("reportOandQ2").value,
+					"reportOandQ3": document.getElementById("reportOandQ3").value,
+					"reportOandQ4": document.getElementById("reportOandQ4").value,
+					"reportTable2Field1": document.getElementById("reportTable2Field1").value,
+					"reportTable2Field2": document.getElementById("reportTable2Field2").value,
+					"reportTable2Field3": document.getElementById("reportTable2Field3").value,
+					"reportTable2Field4": document.getElementById("reportTable2Field4").value,
+					"reportTable2Field5": document.getElementById("reportTable2Field5").value,
+					"reportTable2Field6": document.getElementById("reportTable2Field6").value,
+					"reportTable3Field1": document.getElementById("reportTable3Field1").value,
+					"reportTable3Field2": document.getElementById("reportTable3Field2").value,
+					"reportTable3Field3": document.getElementById("reportTable3Field3").value,
+					"reportTable3Field4": document.getElementById("reportTable3Field4").value,
+					"reportTable3Field5": document.getElementById("reportTable3Field5").value,
+					"reportTable3Field6": document.getElementById("reportTable3Field6").value,
+					"reportTable3Field7": document.getElementById("reportTable3Field7").value,
+					"reportTable3Field8": document.getElementById("reportTable3Field8").value,
+					"reportTable3Field9": document.getElementById("reportTable3Field9").value,
+					"reportTable3Field10": document.getElementById("reportTable3Field10").value,
+					"reportTable4Field1": document.getElementById("reportTable4Field1").value,
+					"reportTable4Field2": document.getElementById("reportTable4Field2").value,
+					"reportTable4Field3": document.getElementById("reportTable4Field3").value,
+					"reportOandQ5": document.getElementById("reportOandQ5").value
+				};
+				download(JSON.stringify(data), "save.json", "application/json");
+				document.querySelectorAll(".canvasPicture").forEach((picture) => {
+					let name = "picture.png"
+					if (picture.classList.contains("task1")) {
+						name = "picture_task1.png"
+					} else if (picture.classList.contains("task2")) {
+						name = "picture_task2.png"
+					};
+					picture.toBlob((blob) => {
+						link.download = name;
+						link.href = URL.createObjectURL(blob);
+						document.body.appendChild(link);
+						link.click();
+					});
+				});
+			}
+			else {
+				try {
+					const data = JSON.parse(WriteOrData);
+					for (var key in data) {
+						document.getElementById(key).value = data[key];
+					}
+				} catch (err){
+					alert(err);
+				}
+			};
+		}
+		//Penguin26 }
+		
+		//Penguin24 | added block {
+		function openLabSheet() {
+			document.getElementById("labSheetTab").style.opacity = 1;
+			document.getElementById("reportTab").style.opacity = 1;
+			/*
+			if (document.getElementById("drawerState").value != "report") {
+				document.getElementById("labSheetTab").style.width = "650px";
+				document.getElementById("labSheetTab").style.padding = "5px";
+				document.getElementById("labSheetTab").style.overflowY = "auto";
+				document.getElementById("labSheetTab").style.border = "5px solid #C0CCCC";
+				document.getElementById("labSheetButton").value = "X";
+				document.getElementById("labSheetButton").style.left = "530px";
+				document.getElementById("labSheetButton").style.backgroundColor = "red";
+				document.getElementById("reportButton").style.left = "550px";
+				document.getElementById("drawerState").value = "labSheet";
+			}*/
+		}
+		
+		
+		function closeLabSheet() {
+			if (document.getElementById("drawerState").value == "labSheet") {
+				document.getElementById("labSheetTab").style.width = "0px";
+				document.getElementById("labSheetTab").style.padding = "0px";
+				document.getElementById("labSheetTab").style.overflowY = "hidden";
+				document.getElementById("labSheetTab").style.border = "0px solid #C0CCCC";
+				document.getElementById("labSheetButton").style.left = "15px";
+				document.getElementById("labSheetButton").style.backgroundColor = "#550055";
+				document.getElementById("labSheetButton").value = "Lab Sheet";
+				document.getElementById("reportButton").value = "Report";
+				document.getElementById("reportButton").style.left = "15px";
+				document.getElementById("reportTab").style.width = "0px";
+				document.getElementById("reportTab").style.padding = "0px";
+				document.getElementById("reportTab").style.overflowY = "hidden";
+				document.getElementById("reportTab").style.border = "0px solid #C0CCCC";
+				document.getElementById("drawerState").value = null;
+			}
+			else {
+				document.getElementById("labSheetTab").style.width = "900px";
+				document.getElementById("labSheetTab").style.padding = "5px";
+				document.getElementById("labSheetTab").style.overflowY = "auto";
+				document.getElementById("labSheetTab").style.border = "5px solid #C0CCCC";
+				document.getElementById("labSheetTab").style.opacity = 1;
+				document.getElementById("labSheetTab").style.opacity = 1;
+				document.getElementById("labSheetButton").value = "X";
+				document.getElementById("labSheetButton").style.left = "750px";
+				document.getElementById("labSheetButton").style.backgroundColor = "red";
+				document.getElementById("reportButton").style.left = "770px";
+				document.getElementById("drawerState").value = "labSheet";
+				
+				document.getElementById("reportTab").style.width = "0px";
+				document.getElementById("reportTab").style.padding = "0px";
+				document.getElementById("reportTab").style.overflowY = "hidden";
+				document.getElementById("reportTab").style.border = "0px solid #C0CCCC";
+				document.getElementById("reportButton").style.backgroundColor = "#005555";
+				document.getElementById("reportButton").value = "Report";
+			}
+		}
+		
+		function openReport() {
+			document.getElementById('reportTab').style.opacity = 1;
+			document.getElementById('labSheetTab').style.opacity = 1;
+			/*
+			if (document.getElementById("drawerState").value != "labSheet") {
+				document.getElementById("reportTab").style.width = "650px";
+				document.getElementById("reportTab").style.padding = "5px";
+				document.getElementById("reportTab").style.overflowY = "auto";
+				document.getElementById("reportTab").style.border = "5px solid #C0CCCC";
+				document.getElementById("reportButton").style.left = "550px";
+				document.getElementById("reportButton").style.backgroundColor = "red";
+				document.getElementById("reportButton").value = "X";
+				document.getElementById("labSheetButton").style.left = "530px";
+				document.getElementById("drawerState").value = "report";
+			}*/
+		}
+
+		function closeReport() {
+			if (document.getElementById("drawerState").value == "report") {
+				document.getElementById("reportTab").style.width = "0px";
+				document.getElementById("reportTab").style.padding = "0px";
+				document.getElementById("reportTab").style.overflowY = "hidden";
+				document.getElementById("reportTab").style.border = "0px solid #C0CCCC";
+				document.getElementById("reportButton").style.left = "15px";
+				document.getElementById("reportButton").style.backgroundColor = "#005555";
+				document.getElementById("reportButton").value = "Report";
+				document.getElementById("labSheetButton").value = "Lab Sheet";
+				document.getElementById("labSheetButton").style.left = "15px";
+				document.getElementById("labSheetTab").style.width = "0px";
+				document.getElementById("labSheetTab").style.padding = "0px";
+				document.getElementById("labSheetTab").style.overflowY = "hidden";
+				document.getElementById("labSheetTab").style.border = "0px solid #C0CCCC";
+				document.getElementById("drawerState").value = null;
+			} else {
+				document.getElementById("reportTab").style.width = "900px";
+				document.getElementById("reportTab").style.padding = "5px";
+				document.getElementById("reportTab").style.overflowY = "auto";
+				document.getElementById("reportTab").style.border = "5px solid #C0CCCC";
+				document.getElementById('reportTab').style.opacity = 1;
+				document.getElementById('labSheetTab').style.opacity = 1;
+				document.getElementById("reportButton").style.left = "770px";
+				document.getElementById("reportButton").style.backgroundColor = "red";
+				document.getElementById("reportButton").value = "X";
+				document.getElementById("labSheetButton").style.left = "750px";
+				document.getElementById("drawerState").value = "report";
+				
+				document.getElementById("labSheetTab").style.width = "0px";
+				document.getElementById("labSheetTab").style.padding = "0px";
+				document.getElementById("labSheetTab").style.overflowY = "hidden";
+				document.getElementById("labSheetTab").style.border = "0px solid #C0CCCC";
+				document.getElementById("labSheetButton").style.backgroundColor = "#550055";
+				document.getElementById("labSheetButton").value = "Lab Sheet";
+			}
+		}
+		
+		function clearChildren(input) {
+			const target = document.getElementById(input);
+			while (target.firstChild) {
+				target.removeChild(target.lastChild);
+			}
+		};
+		
+		function screenShot(input, output) {
+			const div = document.getElementById(input);
+			var useWidth = div.style.width;
+			var useHeight = div.style.height;
+			div.scrollTo(0,0);
+			html2canvas(div).then(
+                function (canvas) {
+					var link = document.createElement('a');
+					canvas.className = "canvasPicture";
+					if (input == "reportDiv") {
+						/*
+						link.href = canvas.toDataURL(); 
+						original = document.getElementById(input);
+						clone = original.cloneNode(true);
+						clone.id = "clone";
+						$(clone).find("*").each(function(index, element) {   // And all inner elements.
+							if(element.id)
+							{
+								var matches = element.id.match(/(.+)_\d+/);
+								console.log(element.id);
+								if(matches && matches.length >= 2) {            // Captures start at [1].
+									element.id = matches[1] + "_cloned";
+									};
+							}
+						}); */
+						const n = "\n"; //Huh, now that i think about it this is not supposed to be considered as 'screenshot' anymore... nah lazy
+						const data = "Course Name: " + document.getElementById("reportCourseName").value + n +
+							"Lab Exercise: ME1000 Lab 10" + n +
+							"Student name: " + document.getElementById("reportStudentName").value + n +
+							"Student No.: " + document.getElementById("reportStudentNo").value + n +
+							"Date: " + document.getElementById("reportDate").value + n +
+							"Started at: " + document.getElementById("reportStarted").value + n +
+							"Ended at: " + document.getElementById("reportEnded").value + n +
+							"" + n +
+							"Lab 5-1 Task 1 - Frequency Synthesizer Characterization" + n +
+							"Data Recording" + n +
+							"Spectrum Analyzer" + n +							
+							"Start Freq.	Start Freq.	Measured Peak #1	Measured Peak #2	Measured Peak #3"+ n +
+							"MHz		MHz		MHz	dBm		MHz	dBm		MHz	dBm" + n +
+							"10		3000		" + document.getElementById("reportTable1Field1").value + "	" + document.getElementById("reportTable1Field2").value + "		" + document.getElementById("reportTable1Field3").value + "	" + document.getElementById("reportTable1Field4").value + "		" + document.getElementById("reportTable1Field5").value + "	" + document.getElementById("reportTable1Field6").value + n +
+							"800		900		" + document.getElementById("reportTable1Field7").value + "	" + document.getElementById("reportTable1Field8").value + "		" + document.getElementById("reportTable1Field9").value + "	" + document.getElementById("reportTable1Field10").value + "		" + document.getElementById("reportTable1Field11").value + "	" + document.getElementById("reportTable1Field12").value + n +
+							"1600		1700		" + document.getElementById("reportTable1Field13").value + "	" + document.getElementById("reportTable1Field14").value + "		" + document.getElementById("reportTable1Field15").value + "	" + document.getElementById("reportTable1Field16").value + "		" + document.getElementById("reportTable1Field17").value + "	" + document.getElementById("reportTable1Field18").value + n +
+							"2400		2500		" + document.getElementById("reportTable1Field19").value + "	" + document.getElementById("reportTable1Field20").value + "		" + document.getElementById("reportTable1Field21").value + "	" + document.getElementById("reportTable1Field22").value + "		" + document.getElementById("reportTable1Field23").value + "	" + document.getElementById("reportTable1Field24").value + n +
+							"" + n +
+							"Attached screenshots of SA at various SA settings" + n +						
+							"" + n +
+							"Calculation" + n +				
+							"	1st Harmonic suppression =	" + document.getElementById("reportCalc1").value + n + 
+							"	2nd Harmonic suppression =	" + document.getElementById("reportCalc2").value + n +				
+							"" + n +
+							"Observation & Question" + n +			
+							"	a) Observe the measured peaks reading when the SA settings are varied. Which setting of the SA gives a more accurate reading and why?" + n +	
+							"" + document.getElementById("reportOandQ1").value + n +
+							"" + n +
+							"	b) Are the measured signals meeting the specifications: frequency range & resolution, output power, harmonic suppression?" + n +
+							"" + document.getElementById("reportOandQ2").value + n +
+							"" + n +
+							"	c) Calculate the LO signal level for 818MHz, Plo at the output of the Synthesizer circuit," + n +
+							"	Given the following path loss @818MHz from Lab 1 Calibration with Spectrum Analyzer:" + n +
+							"	1-meter cable connecting “RF Out” to the SA, Lcable_sa= 0.99dB" + n +
+							"" + n +
+							"	1. What is the power level displayed on the SA when LO is power on?" + n +
+							"	LO level measured at SA, Psa_LO @818 MHz" + n +
+							"	= " + document.getElementById("reportOandQ3").value + n +
+							"" + n +
+							"	2. Determine the output power level of the LO at “RF Out”." + n +
+							"	LO output power, Plo (at RF Out port) = Psa_LO + Lcable_sa" + n +
+							"	= " + document.getElementById("reportOandQ4").value + n +
+							"" + n +
+							"Lab 5-2	Task 2 - Mixer Characterization" + n +
+							"								" + n +
+							"Attached	screenshot of SA			" + n +	
+							"								" + n +
+							"Observation & Question					" + n +	
+							"	a)    Identify all the origin and converted tones (such as LO, RF or RF ± LO) and their respective output power levels. 			" + n +				
+							"	MHz	Amplitude	Signal measured at SA				" + n +
+							"LO	" + document.getElementById("reportTable2Field1").value + "	" + document.getElementById("reportTable2Field2").value + "		Pout_sa_LO" + n +
+							"RF	" + document.getElementById("reportTable2Field3").value + "	" + document.getElementById("reportTable2Field4").value + "		Pout_sa_RF" + n +
+							"RF-LO	" + document.getElementById("reportTable2Field5").value + "	" + document.getElementById("reportTable2Field6").value + "		Pout_sa_IF" + n +
+							"" + n +
+							"	b) Determine the actual input and output power of the mixer" + n +
+							"	Given the following cable losses measured using the scalar calibration method in Lab 1" + n +					
+							"	1. Loss of the 1-meter SMA cable connecting SG to the circuit, Lcable_sg" + n +	
+							"	2. Loss of the 1-meter SMA cable connecting the SA to the circuit, Lcable_sa" + n +
+							"	3. Loss of the 18cm SMA jumper connecting FS to the mixer, Ljumper	" + n +
+							"Frequency/MHz	Lcable_sg/dB	Lcable_sa/dB	Ljumper/dB" + n +
+							"50			0.21			0.21			-" + n +
+							"818			0.95			0.99			?" + n +
+							"868			1.14			1.16			-" + n +
+							"" + n +
+							"Signals	MHz	dBm	Remark				" + n +
+							"Pin_LO	" + document.getElementById("reportTable3Field1").value + "	" + document.getElementById("reportTable3Field2").value + "	get Plo from lab 5-1" + n +
+							"Pin_RF	" + document.getElementById("reportTable3Field3").value + "	" + document.getElementById("reportTable3Field4").value + "	get Signal Generator output power" + n +
+							"Pout_RF	" + document.getElementById("reportTable3Field5").value + "	" + document.getElementById("reportTable3Field6").value + "	get Pout_sa_RF" + n +
+							"Pout_IF	" + document.getElementById("reportTable3Field7").value + "	" + document.getElementById("reportTable3Field8").value + "	get Pout_sa_IF" + n +
+							"Pout_LO	" + document.getElementById("reportTable3Field9").value + "	" + document.getElementById("reportTable3Field10").value + "	get Pout_sa_LO" + n +
+							"" + n +
+							"Parameters		dB	Remark" + n +	
+							"Conversion loss	" + document.getElementById("reportTable4Field1").value + "	Actual input RF power(dBm)–Actual output RF power(dBm)" + n +
+							"" + n +
+							"RF-IF isolation	" + document.getElementById("reportTable4Field2").value + "	Actual input RF power(dBm)–Actual output RF power(dBm)" + n +
+							"" + n +
+							"LO-IF Isolation	" + document.getElementById("reportTable4Field3").value + "	Actual LO input power(dBm)–Actual LO output power(dBm)" + n +
+							"" + n +
+							"	c) Verify that the parameters are meeting the specifications" + n +	
+							"" + document.getElementById("reportOandQ5").value + n;
+						download(data,"report.doc","application/ms-word;charset=utf-8");
+						document.querySelectorAll(".canvasPicture").forEach((picture) => {
+							let name = "picture.png"
+							if (picture.classList.contains("task1")) {
+								name = "picture_task1.png"
+							} else if (picture.classList.contains("task2")) {
+								name = "picture_task2.png"
+							};
+							picture.toBlob((blob) => {
+								link.download = name;
+								link.href = URL.createObjectURL(blob);
+								document.body.appendChild(link);
+								link.click();
+							});
+						});
+					} else {
+						canvas.style.height = "490px";
+						canvas.style.width = "1000px";
+						if (output == "photo1") {
+							canvas.className += " task1";
+						} else {
+							canvas.className += " task2";
+						}
+						document.getElementById(output).appendChild(canvas);
+						var breakline = document.createElement('br');
+						document.getElementById(output).appendChild(breakline);
+					};
+                })
+		};
+		//Penguin26 | edited block {
+		function updateTrainingKit() {
+			const connected = document.getElementById("isConnected").value;
+			const is_on = document.getElementById("isOn").value;
+			const synth = document.getElementById("year").value;
+			
+			document.getElementById("p_noconnect").style.display = "none";
+			document.getElementById("p_off").style.display = "none";
+			document.getElementById("p_on").style.display = "none";
+			
+			if (connected == "true") {
+				document.getElementById("onButton").disabled = false;
+				//document.getElementById("onButton").style.backgroundColor = "#E1E1E1";
+				//document.getElementById("onButton").style.color = "black";
+				//document.getElementById("onButton").style.border = "1px solid #707070";
+				if (is_on == "false") {
+					document.getElementById("p_off").style.display = "inline";
+					document.getElementById("virtualSynth").style.backgroundImage = "url({% static 'TrainingKit\TrainingKit_virtual_off_edited.png' %})";
+				} else {
+					document.getElementById("p_on").style.display = "inline";
+					document.getElementById("virtualSynth").style.backgroundImage = "url({% static 'TrainingKit\TrainingKit_virtual_on_edited.png' %})";
+				};
+			} else {
+				document.getElementById("onButton").innerHTML = "Frequency Synthesizer Off"
+				document.getElementById("isOn").value = false;
+				document.getElementById("onButton").disabled = true;
+				//document.getElementById("onButton").style.backgroundColor = "#E6E6E6";
+				//document.getElementById("onButton").style.color = "#A6A6A6";
+				//document.getElementById("onButton").style.border = "1px solid #BABABA";
+				document.getElementById("p_noconnect").style.display = "inline";
+				document.getElementById("virtualSynth").style.backgroundImage = "url({% static 'TrainingKit\TrainingKit_virtual_not_connected_edited.png' %})";
+			};
+			
+			const center = $("#center").val();
+			const span = $("#span").val();
+			const start = $("#fstart").val();
+			const stop = $("#fstop").val();
+			const valopt = $("#valopt").val();
+			const lab = $("#lab").val();
+			const dlayer = $("#dlayer").val();
+			var year = $("#year").val(); //Penguin24 | edited line
+			//+',' + center + ',' + span
+			
+			//#Penguin | added from here {
+			var marker_x_value1 = "None";
+			var marker_x_value2 = "None";
+			var marker_x_value3 = "None";
+			var marker_x_value4 = "None";
+				
+			if (document.getElementById("markercheckbox1").checked == true) {
+				marker_x_value1 = document.getElementById("markerfrequency1").value;
+				};
+			if (document.getElementById("markercheckbox2").checked == true) {
+				marker_x_value2 = document.getElementById("markerfrequency2").value;
+				};
+			if (document.getElementById("markercheckbox3").checked == true) {
+				marker_x_value3 = document.getElementById("markerfrequency3").value;
+				};
+			if (document.getElementById("markercheckbox4").checked == true) {
+				marker_x_value4 = document.getElementById("markerfrequency4").value;
+				};
+			const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+			//#Penguin | to here }
+			if ($("#isConnected").val() == "false") {
+				year = "Disconnected";
+			} else if ($("#isOn").val() == "false") {
+				year = "Freq.Syn-Off";
+			};
+			
+			const peaknum = document.getElementById("peaknum").value;
+			const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+			loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //#Penguin | Added: + ',' + marker_x_values //Penguin12 | Added peaknum
+		};
+		//Penguin26 }
+		//Penguin24 }
+		
+		let animate = false;
+		function showTab(box) {
+			//document.getElementById('labSheetTab').style.display = "none";
+			//document.getElementById('reportTab').style.display = "none";
+			document.getElementById('labStationTab').style.display = "none";
+			document.getElementById('trainingKitTab').style.display = "none";
+			document.getElementById('spectrumAnalyzerTab').style.display = "none";
+			document.getElementById('unknownTab').style.display = "none";
+			document.getElementById(box).style.display = "inline";
+			
+			const formula = (origin, time, scale) => origin + scale*((Math.cos(time))*(1/(20*time+10))); //Penguin22 || I made this using desmos for my old game
+			let time = 0;
+			clearInterval(animate);
+			trainingImg = document.getElementById(box).querySelectorAll(".trainingImg")
+			canvasPic = document.getElementById(box).querySelectorAll(".canvasPicture")
+			animate = setInterval(() => {
+				if (time < Math.PI*4.5) {
+					document.getElementById(box).style.minHeight = formula(600,time,300) + "px";
+					document.getElementById(box).style.minWidth = formula(500,time, 300) + "px";
+					document.getElementById(box).style.fontSize = formula(20, time, 10) + "px";
+					if (canvasPic.length) {
+						canvasPic.height = formula(490, time, 10) + "px";
+						canvasPic.width = formula(1000, time, 10) + "px";
+					};
+					if (trainingImg.length) {
+						trainingImg.height = formula(500, time, 10) + "px";
+						trainingImg.width = formula(500, time, 10) + "px";
+					};
+				} else {
+					document.getElementById(box).style.minHeight = "600px";
+					document.getElementById(box).style.minWidth = "500px";
+					document.getElementById(box).style.fontSize = "20px";
+					clearInterval(animate);
+				}
+				time += 0.1
+			}, 1);
+			//document.getElementById(box).scrollTop = 0; //Penguin24 || Notice: this is added so animation doesnt look crazy at low scroll values 
+			// however this will lose the functionality of 'remembering' its scroll value
+			// this code can also be placed above all the main function code so it only resets 
+			// after clicking the button twice
+		};
+	
+	
+		var id = null;
+		function showBox(box) {
+			document.getElementById('FrequencySet').style.display = "none";
+			document.getElementById('AmplitudeSet').style.display = "none";
+			document.getElementById('BWSet').style.display = "none";
+			document.getElementById('MarkerSet').style.display = "none";
+			document.getElementById('PeakSet').style.display = "none";
+			document.getElementById('ViewSet').style.display = "none";
+			document.getElementById(box).style.display = "inline";
+			
+			var elem = document.getElementById('animatedbox');
+			var i = 0;
+			clearInterval(id);
+			id = setInterval(frame, 1);
+			
+			function frame() {
+			if (i >= 1.00) {
+				clearInterval(id);
+			} else {
+				i += 0.02;
+				elem.style.backgroundColor = "rgba("+25*(i+0.5)+","+55*(i+0.5)+","+55*(i+0.5)+","+i+")";
+				elem.style.boxShadow = 4*i+"px " +5*i+"px " + "#000000";
+			};
+			};
+		};
+		
+		function updateField(field, unit, tempfield){
+		switch(document.getElementById(unit).value){
+			case "KHz":
+				document.getElementById(field).value = tempfield / 1000;
+				break;
+			case "MHz":
+				document.getElementById(field).value = tempfield / 1000000;
+				break;
+			case "GHz":
+				document.getElementById(field).value = tempfield / 1000000000;
+				break;
+			}
+		};
+		
+		//Penguin15 | Added Block {
+		function download(data, filename, type) {
+			var file = new Blob([data], {type: type});
+			if (window.navigator.msSaveOrOpenBlob) // IE10+ //Penguin15 || so basically if its IE10+ this function exists and allows you to save
+				window.navigator.msSaveOrOpenBlob(file, filename);
+			else { // Others
+				var a = document.createElement("a"); //Penguin15 || make a temp element
+				a.href = URL.createObjectURL(file);  //Penguin15 || create url for file
+				a.download = filename; //Penguin15 || set file name
+				document.body.appendChild(a); //Penguin15 || add a to the html 
+				a.click(); //Penguin15 || Automatically clicks the a element
+				
+				setTimeout(function() {//Penguin15 || immediately remove the temp element and its url but because its timeout it is after the save thing does the thing
+					document.body.removeChild(a);
+					window.URL.revokeObjectURL(a.href);
+				}, 0); 
+				
+			}
+		}
+		//Penguin15 }
+		
+		///Penguin16 | Added Block | Do da shuffle {
+		function shuffle(array) {
+		  var m = array.length, t, i;
+
+		  // While there remain elements to shuffle…
+		  while (m) {
+
+			// Pick a remaining element…
+			i = Math.floor(Math.random() * m--);
+
+			// And swap it with the current element.
+			t = array[m];
+			array[m] = array[i];
+			array[i] = t;
+		  }
+
+		  return array;
+		}
+		//Penguin16 }
+		
+		$(document).ready(function () {
+			$.ajax({
+				url: "/vsa/chart/filter-options/",
+				type: "GET",
+				dataType: "json",
+				success: (jsonResponse) => {
+					// Load all the options
+					//jsonResponse.options.forEach(option => {
+					// $("#year").append(new Option(option, option));
+					//});
+					// Load data for the first option
+					//loadAllCharts($("#year").children().first().val());
+					
+					const center = $("#realfstart").val();
+					const span = $("#realfstop").val();
+					const valopt =  "startstop";//$("#valopt").val();
+					const lab = $("#lab").val();
+					const dlayer = $("#dlayer").val();
+					var year = $("#year").val();
+					//+',' + center + ',' + span
+					
+					//#Penguin | added from here {
+					var marker_x_value1 = "None"; 
+					var marker_x_value2 = "None";
+					var marker_x_value3 = "None";
+					var marker_x_value4 = "None";
+					if (document.getElementById("markercheckbox1").checked == true) {
+						marker_x_value1 = document.getElementById("markerfrequency1").value;
+						};
+					if (document.getElementById("markercheckbox2").checked == true) {
+						marker_x_value2 = document.getElementById("markerfrequency2").value;
+						};
+					if (document.getElementById("markercheckbox3").checked == true) {
+						marker_x_value3 = document.getElementById("markerfrequency3").value;
+						};
+					if (document.getElementById("markercheckbox4").checked == true) {
+						marker_x_value4 = document.getElementById("markerfrequency4").value;
+						};
+					const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+					//#Penguin | to here }
+					if ($("#isConnected").val() == "false") {
+						year = "Disconnected";
+					} else if ($("#isOn").val() == "false") {
+						year = "Freq.Syn-Off";
+					};
+					
+					const peaknum = document.getElementById("peaknum").value;
+					const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+					loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //#Penguin | Added: + ',' + marker_x_values //Penguin12 | Added peaknum
+
+					
+				},
+				error: () => console.log("Failed to fetch chart filter options!")
+			});
+		});
+
+    $("#filterForm").on("submit", (event) => {
+        event.preventDefault();
+
+        const center = $("#center").val();
+        const span = $("#span").val();
+		const start = $("#fstart").val();
+		const stop = $("#fstop").val();
+        const valopt = $("#valopt").val();
+        const lab = $("#lab").val();
+        const dlayer = $("#dlayer").val();
+		var year = $("#year").val(); //Penguin24 | edited line
+        //+',' + center + ',' + span
+		
+		//#Penguin | added from here {
+        var marker_x_value1 = "None";
+		var marker_x_value2 = "None";
+		var marker_x_value3 = "None";
+		var marker_x_value4 = "None";
+		
+		//Penguin24 | added block {
+		/*
+		if (document.getElementById("isConnected").value == "false") {
+				year = "Freq.Syn-Off";
+				document.getElementById("year").value = "Freq.Syn-Off";
+			}; */
+		//Penguin24 }
+			
+		if (document.getElementById("markercheckbox1").checked == true) {
+			marker_x_value1 = document.getElementById("markerfrequency1").value;
+			};
+		if (document.getElementById("markercheckbox2").checked == true) {
+			marker_x_value2 = document.getElementById("markerfrequency2").value;
+			};
+		if (document.getElementById("markercheckbox3").checked == true) {
+			marker_x_value3 = document.getElementById("markerfrequency3").value;
+			};
+		if (document.getElementById("markercheckbox4").checked == true) {
+			marker_x_value4 = document.getElementById("markerfrequency4").value;
+			};
+		const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+		//#Penguin | to here }
+		if ($("#isConnected").val() == "false") {
+			year = "Disconnected";
+		} else if ($("#isOn").val() == "false") {
+			year = "Freq.Syn-Off";
+		};
+		
+		const peaknum = document.getElementById("peaknum").value;
+		const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+		loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //#Penguin | Added: + ',' + marker_x_values //Penguin12 | Added peaknum
+    });
+	
+	//#Penguin | added from here {
+	$("#markerForm").on("submit", (event) => {
+        event.preventDefault();
+		document.getElementById("markercheckbox1").checked = false;
+		document.getElementById("markercheckbox2").checked = false;
+		document.getElementById("markercheckbox3").checked = false;
+		document.getElementById("markercheckbox4").checked = false;
+		
+        const center = $("#center").val();
+        const span = $("#span").val();
+		const start = $("#fstart").val();
+		const stop = $("#fstop").val();
+        const valopt = $("#valopt").val();
+        const lab = $("#lab").val();
+        const dlayer = $("#dlayer").val();
+		var year = $("#year").val();
+		var marker_x_value1 = "None";
+		var marker_x_value2 = "None";
+		var marker_x_value3 = "None";
+		var marker_x_value4 = "None";
+		const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+		if ($("#isConnected").val() == "false") {
+			year = "Disconnected";
+		} else if ($("#isOn").val() == "false") {
+			year = "Freq.Syn-Off";
+		};
+		
+		const peaknum = document.getElementById("peaknum").value;
+		const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+		loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //Penguin12 | Added peaknum
+		
+    });
+	//#Penguin | to here }
+	
+	//#Penguin6 | added from{
+	$("#ampForm").on("submit", (event) => {
+		event.preventDefault();
+
+        const center = $("#center").val();
+        const span = $("#span").val();
+		const start = $("#fstart").val();
+		const stop = $("#fstop").val();
+        const valopt = $("#valopt").val();
+        const lab = $("#lab").val();
+        const dlayer = $("#dlayer").val();
+		var year = $("#year").val();
+		
+        var marker_x_value1 = "None";
+		var marker_x_value2 = "None";
+		var marker_x_value3 = "None";
+		var marker_x_value4 = "None";
+		if (document.getElementById("markercheckbox1").checked == true) {
+			marker_x_value1 = document.getElementById("markerfrequency1").value;
+			};
+		if (document.getElementById("markercheckbox2").checked == true) {
+			marker_x_value2 = document.getElementById("markerfrequency2").value;
+			};
+		if (document.getElementById("markercheckbox3").checked == true) {
+			marker_x_value3 = document.getElementById("markerfrequency3").value;
+			};
+		if (document.getElementById("markercheckbox4").checked == true) {
+			marker_x_value4 = document.getElementById("markerfrequency4").value;
+			};
+		const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+		//#Penguin | to here }
+		if ($("#isConnected").val() == "false") {
+			year = "Disconnected";
+		} else if ($("#isOn").val() == "false") {
+			year = "Freq.Syn-Off";
+		};
+		
+		const peaknum = document.getElementById("peaknum").value;
+		const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+		loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //Penguin12 | Added peaknum
+	});
+	//#Penguin6 | to }
+	
+	//Penguin20 | added block {
+	$("#bwForm").on("submit", (event) => {
+        event.preventDefault();
+
+        const center = $("#center").val();
+        const span = $("#span").val();
+		const start = $("#fstart").val();
+		const stop = $("#fstop").val();
+        const valopt = $("#valopt").val();
+        const lab = $("#lab").val();
+        const dlayer = $("#dlayer").val();
+		var year = $("#year").val();
+        //+',' + center + ',' + span
+		
+		//#Penguin | added from here {
+        var marker_x_value1 = "None";
+		var marker_x_value2 = "None";
+		var marker_x_value3 = "None";
+		var marker_x_value4 = "None";
+		if (document.getElementById("markercheckbox1").checked == true) {
+			marker_x_value1 = document.getElementById("markerfrequency1").value;
+			};
+		if (document.getElementById("markercheckbox2").checked == true) {
+			marker_x_value2 = document.getElementById("markerfrequency2").value;
+			};
+		if (document.getElementById("markercheckbox3").checked == true) {
+			marker_x_value3 = document.getElementById("markerfrequency3").value;
+			};
+		if (document.getElementById("markercheckbox4").checked == true) {
+			marker_x_value4 = document.getElementById("markerfrequency4").value;
+			};
+		const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+		//#Penguin | to here }
+		if ($("#isConnected").val() == "false") {
+			year = "Disconnected";
+		} else if ($("#isOn").val() == "false") {
+			year = "Freq.Syn-Off";
+		};
+		
+		const peaknum = document.getElementById("peaknum").value;
+		const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+		loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //#Penguin | Added: + ',' + marker_x_values //Penguin12 | Added peaknum
+    });
+	//Penguin20 }
+	
+//#Penguin2 | declare as global instead from here {
+var y_value1
+var y_value2
+var y_value3
+var y_value4
+var y_value21
+var y_value22
+var y_value23
+var y_value24
+var y_value31
+var y_value32
+var y_value33
+var y_value34
+var y_value41
+var y_value42
+var y_value43
+var y_value44
+var y_value51
+var y_value52
+var y_value53
+var y_value54
+//#Penguin2 | to here }
+
+var deck = [1,2,3,4,5] //Penguin16 | Added Line| Yes yes, I know that naming these variables after cards is a bad idea but it helps me visualize
+var hand = [0,0,0,0] //Penguin16 | Added Line
+var storeddata1 = []; //Penguin18 | added line | store data for when graph changes it stays
+var storeddata2 = []; //Penguin18 | added line | store data for when graph changes it stays
+var storeddata3 = []; //Penguin18 | added line | store data for when graph changes it stays
+var storeddata4 = []; //Penguin18 | added line | store data for when graph changes it stays
+
+var changemarker = false; //Penguin20 | added line
+
+function loadChart(chart, endpoint) {
+    $.ajax({
+        url: endpoint,
+        type: "GET",
+        dataType: "json",
+        success: (jsonResponse) => {
+            // Extract data from the response
+            const title = jsonResponse.title;
+            const labels = jsonResponse.data.labels;
+            const datasets = jsonResponse.data.datasets;
+			const peak_list = jsonResponse.peak_list; //Penguin13/12 | Added line | forgot to comment this during penguin12
+			const true_peak_num = jsonResponse.peaknum;//Penguin13 | Added line | I tried to avoid this but well, true_peak_num is peaknum after being processed by python and I have to update peaknum in html now
+			//#Penguin3 | added from here {
+			const freqmin = 0; //Penguin11 | round value //Penguin18 | Edited Line 
+			const freqmax = Math.round(jsonResponse.freq_data_range[1]/1000000); //Penguin11 | round value
+			//#Penguin3 | to here }
+			const min_value = jsonResponse.min; //Penguin20 | added line
+			
+			// Penguin18 | added block {
+			if (document.getElementById("viewcheckbox1").checked == true || document.getElementById("viewcheckbox2").checked == true || document.getElementById("viewcheckbox3").checked == true || document.getElementById("viewcheckbox4").checked == true) {
+				//document.getElementById("lab").value = "L1";
+				document.getElementById("center").setAttribute("readonly", true);
+				document.getElementById("center").style.backgroundColor = "gray"; //Penguin20 | added line
+				document.getElementById("span").setAttribute("readonly", true);
+				document.getElementById("span").style.backgroundColor = "gray"; //Penguin20 | added line
+				document.getElementById("fstart").setAttribute("readonly", true);
+				document.getElementById("fstart").style.backgroundColor = "gray"; //Penguin20 | added line
+				document.getElementById("fstop").setAttribute("readonly", true);
+				document.getElementById("fstop").style.backgroundColor = "gray"; //Penguin20 | added line
+				document.getElementById("notice").innerHTML = "Please disable trace view to re-enable editing of span"; //Penguin26 | added line
+			}
+			else {
+				//document.getElementById("lab").value = "L1";
+				document.getElementById("center").removeAttribute("readonly");
+				document.getElementById("center").style.backgroundColor = ""; //Penguin20 | added line
+				document.getElementById("span").removeAttribute("readonly");
+				document.getElementById("span").style.backgroundColor = ""; //Penguin20 | added line
+				document.getElementById("fstart").removeAttribute("readonly");
+				document.getElementById("fstart").style.backgroundColor = ""; //Penguin20 | added line
+				document.getElementById("fstop").removeAttribute("readonly");
+				document.getElementById("fstop").style.backgroundColor = ""; //Penguin20 | added line
+				document.getElementById("notice").innerHTML = null;
+			}
+			//Penguin18 }
+			
+			document.getElementById("peaknum").value = true_peak_num //Penguin13 | Added line | peaknum updated yay
+			
+			//Penguin12 | Added block | peak must be done before amplitude update so peaknum added as an element in loadallcharts {
+			document.getElementById("peaknum").max = peak_list.length - 1; //Penguin12 | Added line | set max to array size 
+			
+			if (document.getElementById("peaknum").value != "None") {  //Penguin12 | only overrides when peaknum != None which is when button pressed. override disabled when marker freq field is changed through human input (not button)
+				//Penguin18 | removed line
+				//Penguin19 | added block {
+				const current_marker = document.getElementById("currentmarker").value;
+				//Penguin20 | added/edited block {
+				var current_value = 0.000
+				if (min_value == "None") {	
+					current_value = (peak_list[true_peak_num]/1000000).toFixed(3)-0.001; //Penguin19 | edited/moved line 
+				} else {
+					current_value = (min_value/1000000).toFixed(3);
+				};
+				//Penguin20 }
+				switch (parseInt(current_marker)) {
+					case 1:
+						document.getElementById("markerfrequency1").value = current_value; //Penguin12 | Added line | set marker1 to the peaks, technically this is visual only because overriding in python doesnt show in javascript
+						break;
+					case 2:
+						document.getElementById("markerfrequency2").value = current_value;
+						break;
+					case 3:
+						document.getElementById("markerfrequency3").value = current_value;
+						break;
+					case 4:
+						document.getElementById("markerfrequency4").value = current_value;
+						break;
+					default:
+						document.getElementById("currentmarker").value = 1
+						document.getElementById("markerfrequency1").value = current_value;
+						break;
+				};
+				//Penguin19 }
+			}
+			//Penguin12 }
+			
+			//#Penguin2 | Edited: Removed all const from here {
+			y_value1 = jsonResponse.amp_y_value1;
+			y_value2 = jsonResponse.amp_y_value2;
+			y_value3 = jsonResponse.amp_y_value3;
+			y_value4 = jsonResponse.amp_y_value4;
+			y_value21 = jsonResponse.amp_y_value21;
+			y_value22 = jsonResponse.amp_y_value22;
+			y_value23 = jsonResponse.amp_y_value23;
+			y_value24 = jsonResponse.amp_y_value24;
+			y_value31 = jsonResponse.amp_y_value31;
+			y_value32 = jsonResponse.amp_y_value32;
+			y_value33 = jsonResponse.amp_y_value33;
+			y_value34 = jsonResponse.amp_y_value34;
+			y_value41 = jsonResponse.amp_y_value41;
+			y_value42 = jsonResponse.amp_y_value42;
+			y_value43 = jsonResponse.amp_y_value43;
+			y_value44 = jsonResponse.amp_y_value44;
+			y_value51 = jsonResponse.amp_y_value51;
+			y_value52 = jsonResponse.amp_y_value52;
+			y_value53 = jsonResponse.amp_y_value53;
+			y_value54 = jsonResponse.amp_y_value54;
+			//#Penguin2 | to here }
+			
+			//Check if lab graph changed and update marker minmax frequency 
+			//#Penguin3 | added from here {
+			if (!(document.getElementById("previouslab").value == document.getElementById("lab").value)) { //Penguin21 | Edited line |  || !(document.getElementById("previousyear").value == document.getElementById("year").value)
+				document.getElementById("previouslab").value = document.getElementById("lab").value;
+				document.getElementById("previousyear").value = document.getElementById("year").value;
+				document.getElementById("markerminmax1").min = freqmin;
+				document.getElementById("markerminmax1").max = freqmax;
+				document.getElementById("markerminmax2").min = freqmin;
+				document.getElementById("markerminmax2").max = freqmax;
+				document.getElementById("markerminmax3").min = freqmin;
+				document.getElementById("markerminmax3").max = freqmax;
+				document.getElementById("markerminmax4").min = freqmin;
+				document.getElementById("markerminmax4").max = freqmax;
+				document.getElementById("realcenter").value = (freqmax+freqmin)/0.000002;
+				document.getElementById("realspan").value = (freqmax-freqmin)*1000000;
+
+				//Penguin18 | added {
+				document.getElementById("markerfrequency1").value = (freqmax+freqmin)/2;
+				document.getElementById("markerfrequency2").value = (freqmax+freqmin)/2;
+				document.getElementById("markerfrequency3").value = (freqmax+freqmin)/2;
+				document.getElementById("markerfrequency4").value = (freqmax+freqmin)/2;
+				///Penguin18 }
+				
+				var centerf = +document.getElementById("realcenter").value;
+				var spanf = +document.getElementById("realspan").value;
+				var startf = centerf - (spanf/2);
+				var stopf = centerf + (spanf/2);
+				
+				document.getElementById("realfstart").value = startf;
+				document.getElementById("realfstop").value = stopf;
+				updateField("center", "centerunit", centerf);	 //#Penguin3 | added update center
+				updateField("span", "spanunit", spanf);	 //#Penguin3 | added update span
+				updateField("fstop", "fstopunit", stopf);
+				updateField("fstart", "fstartunit", startf);
+				
+				//Penguin20 | added block {
+				
+				const center = $("#center").val();
+				const span = $("#span").val();
+				const start = $("#fstart").val();
+				const stop = $("#fstop").val();
+				const valopt = $("#valopt").val();
+				const lab = $("#lab").val();
+				const dlayer = $("#dlayer").val();
+				var year = $("#year").val();
+				
+				var marker_x_value1 = "None";
+				var marker_x_value2 = "None";
+				var marker_x_value3 = "None";
+				var marker_x_value4 = "None";
+				
+				if (document.getElementById("markercheckbox1").checked == true) {
+					marker_x_value1 = document.getElementById("markerfrequency1").value;
+					};
+				if (document.getElementById("markercheckbox2").checked == true) {
+					marker_x_value2 = document.getElementById("markerfrequency2").value;
+					};
+				if (document.getElementById("markercheckbox3").checked == true) {
+					marker_x_value3 = document.getElementById("markerfrequency3").value;
+					};
+				if (document.getElementById("markercheckbox4").checked == true) {
+					marker_x_value4 = document.getElementById("markerfrequency4").value;
+					};
+				const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+				if ($("#isConnected").val() == "false") {
+					year = "Disconnected";
+				} else if ($("#isOn").val() == "false") {
+					year = "Freq.Syn-Off";
+				};
+				const peaknum = document.getElementById("peaknum").value;
+				const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+				loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line
+				//Penguin20 }
+				
+			}
+			//#Penguin3 | to here }
+			
+            // Reset the current chart
+            chart.data.datasets = [];
+            chart.data.labels = [];
+			
+            // Load new data into the chart
+            //chart.options.title.text = ["", title]; //Penguin18 | edited line 
+			//chart.options.title.align = 'end';
+            chart.options.title.display = true;
+			//chart.options.legend.text = ["legend"]; //Penguin19 | added line
+            //chart.options.legend.display = true; //Penguin19 | added line
+            chart.data.labels = labels;
+			//Penguin12 | Removed console.log redundancy
+			
+			const reflevelx = parseFloat(document.getElementById("reflevel").value) //set reflevelx with parseFloat
+			//Penguin16 | Added Block | Cloning and cards here we go! {
+			deck = shuffle(deck); //Penguin16 || Fisher–Yates Shuffle
+			//Penguin18 | removed redundancy
+			if (document.getElementById('viewcheckbox1').checked == true) { //Penguin16 || The algorithm matches hand index as checkbox, with the value as line
+				for (let i = 0; i < deck.length; i++) {  //Penguin16 || Search for each card in deck
+					if (hand[0] == 0 && !(hand.includes(deck[i]))) { //Penguin16 || if the current card being searched is not already included in hand //Penguin17 | Edited Line | Oops forgot check if hand empty
+						hand[0] = deck[i]; //Penguin16 || Copy the card to hand. Btw using .shift() on deck will not work as random must be replenished with every loadchart
+						break;
+					};
+				};
+			}
+			else {
+				hand[0] = 0;
+				storeddata1 = []; //Penguin18 | added line
+			};
+			
+			if (document.getElementById('viewcheckbox2').checked == true) {
+				for (let i = 0; i < deck.length; i++) {
+					if (hand[1] == 0 && !(hand.includes(deck[i]))) {//Penguin17 | Edited Line | Oops forgot check if hand empty
+						hand[1] = deck[i];
+						break;
+					};
+				};
+			}
+			else {
+				hand[1] = 0;
+				storeddata2 = []; //Penguin18 | added line
+			};
+			if (document.getElementById('viewcheckbox3').checked == true) {
+				for (let i = 0; i < deck.length; i++) {
+					if (hand[2] == 0 && !(hand.includes(deck[i]))) {//Penguin17 | Edited Line | Oops forgot check if hand empty
+						hand[2] = deck[i];
+						break;
+					};
+				};
+			}
+			else {
+				hand[2] = 0;
+				storeddata3 = []; //Penguin18 | added line
+			};
+			if (document.getElementById('viewcheckbox4').checked == true) {
+				for (let i = 0; i < deck.length; i++) {
+					if (hand[3] == 0 && !(hand.includes(deck[i]))) {//Penguin17 | Edited Line | Oops forgot check if hand empty
+						hand[3] = deck[i];
+						break;
+					};;
+				};
+			}
+			else {
+				hand[3] = 0;
+				storeddata4 = []; //Penguin18 | added line
+			};
+			//Penguin18 | removed redundancy
+			var currentIndex = 0;
+            datasets.forEach(traceset => {
+				var refdata = [] //reset
+				traceset.data.forEach(traceamplitude => { //sabotage each data value and edited their values
+					traceamplitude = parseFloat(traceamplitude)*(-100-reflevelx)/-100 + reflevelx; //scale by (min-max)/min and than offset by max | note this equation does not work with min = -100, but thats cause min = max so the line becomes 1 dimensional
+					refdata.push(traceamplitude);
+				});
+				var deepcopy = JSON.parse(JSON.stringify(traceset)); //DEEPCOPY ACTIVATED yes its just a json reparse
+				deepcopy.data = refdata; //Penguin16 || changed line position and made it deepcopy instead. Also I just realized that putting max value to below min value makes graph upside down
+				deepcopy.hidden = true; //Penguin16 || WARNING: apparently 'false' will always be treated as true so only a boolean false will work. However it appears that the json files have 'false' as the hidden property so it is actually treated as true
+				//Penguin16 || In other words the json files chart.data.datasets[x].hidden values are wrong but functional
+				//Penguin16 || Because json files doesn't allow booleans so I suggest turning them to numbers i.e. 0 and 1
+				switch (currentIndex) { //Penguin16 || Repeat for all trace lines with different data values
+					case 1:
+						if (hand.includes(1)) { //Penguin16 || If hand includes card 1 which signifies line 1 (the value is the line and the index is the checkbox)
+							deepcopy.hidden = false; //Penguin18 | moved line
+							switch (hand.indexOf(1)) { //Penguin16 || indexOf 'which hand has the card' signifies which trace checkbox is checked, so index 0 is checkbox 1 and should have red colour
+								case 0:
+									deepcopy.backgroundColor = '#ff0000';
+									deepcopy.borderColor = '#ff0000';
+									if (storeddata1.length == 0) storeddata1 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata1);
+									break;
+								case 1:
+									deepcopy.backgroundColor = '#00ff00';
+									deepcopy.borderColor = '#00ff00';
+									if (storeddata2.length == 0) storeddata2 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata2);
+									break;
+								case 2:
+									deepcopy.backgroundColor = '#00ffff';
+									deepcopy.borderColor = '#00ffff';
+									if (storeddata3.length == 0) storeddata3 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata3);
+									break;
+								case 3:
+									deepcopy.backgroundColor = '#ff00ff';
+									deepcopy.borderColor = '#ff00ff';
+									if (storeddata4.length == 0) storeddata4 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata4);
+									break;
+							};
+						};
+						break;
+					case 2:
+						if (hand.includes(2)) {
+							deepcopy.hidden = false; //Penguin18 | moved line
+							switch (hand.indexOf(2)) { //Penguin16 || indexOf 'which hand has the card' signifies which trace checkbox is checked, so index 0 is checkbox 1 and should have red colour
+								case 0:
+									deepcopy.backgroundColor = '#ff0000';
+									deepcopy.borderColor = '#ff0000';
+									if (storeddata1.length == 0) storeddata1 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata1);
+									break;
+								case 1:
+									deepcopy.backgroundColor = '#00ff00';
+									deepcopy.borderColor = '#00ff00';
+									if (storeddata2.length == 0) storeddata2 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata2);
+									break;
+								case 2:
+									deepcopy.backgroundColor = '#00ffff';
+									deepcopy.borderColor = '#00ffff';
+									if (storeddata3.length == 0) storeddata3 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata3);
+									break;
+								case 3:
+									deepcopy.backgroundColor = '#ff00ff';
+									deepcopy.borderColor = '#ff00ff';
+									if (storeddata4.length == 0) storeddata4 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata4);
+									break;
+							};
+						};
+						break;
+					case 3:
+						if (hand.includes(3)) {
+							deepcopy.hidden = false; //Penguin18 | moved line
+							switch (hand.indexOf(3)) { //Penguin16 || indexOf 'which hand has the card' signifies which trace checkbox is checked, so index 0 is checkbox 1 and should have red colour
+								case 0:
+									deepcopy.backgroundColor = '#ff0000';
+									deepcopy.borderColor = '#ff0000';
+									if (storeddata1.length == 0) storeddata1 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata1);
+									break;
+								case 1:
+									deepcopy.backgroundColor = '#00ff00';
+									deepcopy.borderColor = '#00ff00';
+									if (storeddata2.length == 0) storeddata2 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata2);
+									break;
+								case 2:
+									deepcopy.backgroundColor = '#00ffff';
+									deepcopy.borderColor = '#00ffff';
+									if (storeddata3.length == 0) storeddata3 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata3);
+									break;
+								case 3:
+									deepcopy.backgroundColor = '#ff00ff';
+									deepcopy.borderColor = '#ff00ff';
+									if (storeddata4.length == 0) storeddata4 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata4);
+									break;
+							};
+						};
+						break;
+					case 4:
+						if (hand.includes(4)) {
+							deepcopy.hidden = false; //Penguin18 | moved line
+							switch (hand.indexOf(4)) { //Penguin16 || indexOf 'which hand has the card' signifies which trace checkbox is checked, so index 0 is checkbox 1 and should have red colour
+								case 0:
+									deepcopy.backgroundColor = '#ff0000';
+									deepcopy.borderColor = '#ff0000';
+									if (storeddata1.length == 0) storeddata1 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata1);
+									break;
+								case 1:
+									deepcopy.backgroundColor = '#00ff00';
+									deepcopy.borderColor = '#00ff00';
+									if (storeddata2.length == 0) storeddata2 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata2);
+									break;
+								case 2:
+									deepcopy.backgroundColor = '#00ffff';
+									deepcopy.borderColor = '#00ffff';
+									if (storeddata3.length == 0) storeddata3 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata3);
+									break;
+								case 3:
+									deepcopy.backgroundColor = '#ff00ff';
+									deepcopy.borderColor = '#ff00ff';
+									if (storeddata4.length == 0) storeddata4 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata4);
+									break;
+							};
+						};
+						break;
+					case 5:
+						if (hand.includes(5)) {
+							deepcopy.hidden = false; //Penguin18 | moved line
+							switch (hand.indexOf(5)) { //Penguin16 || indexOf 'which hand has the card' signifies which trace checkbox is checked, so index 0 is checkbox 1 and should have red colour
+								case 0:
+									deepcopy.backgroundColor = '#ff0000';
+									deepcopy.borderColor = '#ff0000';
+									if (storeddata1.length == 0) storeddata1 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata1); //Penguin20 | added missing line
+									break;
+								case 1:
+									deepcopy.backgroundColor = '#00ff00';
+									deepcopy.borderColor = '#00ff00';
+									if (storeddata2.length == 0) storeddata2 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata2);
+									break;
+								case 2:
+									deepcopy.backgroundColor = '#00ffff';
+									deepcopy.borderColor = '#00ffff';
+									if (storeddata3.length == 0) storeddata3 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata3);
+									break;
+								case 3:
+									deepcopy.backgroundColor = '#ff00ff';
+									deepcopy.borderColor = '#ff00ff';
+									if (storeddata4.length == 0) storeddata4 = deepcopy; //Penguin18 | added line
+									chart.data.datasets.push(storeddata4);
+									break;
+							};
+						};
+						break;
+				};
+				//Penguin18 | removed redundancy
+				currentIndex += 1
+			});
+			//Penguin16 }
+			
+			//Penguin18 | Added Block | Tracing moving graph{
+			for (let i = 0; i < 4; i++) {
+				var color = '#000000';
+				switch(i) {
+					case 0:
+						color = '#ff0000';
+						break;
+					case 1:
+						color = '#00ff00';
+						break;
+					case 2:
+						color = '#00ffff';
+						break;
+					case 3:
+						color = '#ff00ff';
+						break;
+				};
+				for (let j = 0; j < 6; j++) {
+					var refdata = [] //reset
+					datasets[j].data.forEach(movingamplitude => {
+						movingamplitude = parseFloat(movingamplitude)*(-100-reflevelx)/-100 + reflevelx;
+						refdata.push(movingamplitude);
+					});
+					var deepcopy = JSON.parse(JSON.stringify(datasets[j])); 
+					deepcopy.data = refdata;
+					deepcopy.backgroundColor = color;
+					deepcopy.borderColor = color;
+					deepcopy.width = 1;
+					deepcopy.hidden = true
+					if (j == 0) {
+						if (viewcheckbox1.checked == false && tracecheckbox1.checked == true && i == 0) deepcopy.hidden = false;
+						if (viewcheckbox2.checked == false && tracecheckbox2.checked == true && i == 1) deepcopy.hidden = false;
+						if (viewcheckbox3.checked == false && tracecheckbox3.checked == true && i == 2) deepcopy.hidden = false;
+						if (viewcheckbox4.checked == false && tracecheckbox4.checked == true && i == 3) deepcopy.hidden = false;
+					}
+					chart.data.datasets.push(deepcopy);
+				};
+			};
+			//Penguin18 }
+			
+			//Penguin8 | added from { //Penguin18 | moved block
+            datasets.forEach(dataset => {
+				var refdata = [] //reset
+				dataset.data.forEach(amplitude => { //sabotage each data value and edited their values
+					amplitude = parseFloat(amplitude)*(-100-reflevelx)/-100 + reflevelx; //scale by (min-max)/min and than offset by max | note this equation does not work with min = -100, but thats cause min = max so the line becomes 1 dimensional
+					refdata.push(amplitude);
+				});
+				dataset.data = refdata; //put the edited sabotaged values and infiltrate them back into data
+                chart.data.datasets.push(dataset);
+            });
+			//Penguin8 | to }
+
+			//Penguin15 | Added Block {
+			if (document.getElementById('downloading').value != 0) { //Penguin16 | Edited Line | as long as its not 0
+				var set_file_name = prompt("Please enter filename"); //Penguin16 | Added Line | Trying to use saveAs will not work as the naming part is after the file has been formatted so this is used instead
+				if (set_file_name) { //Penguin16 | Edited line to set file name instead, confirm dialog removed
+					const tracenum = parseInt(document.getElementById('downloading').value); //Penguin16 | Added Line | Declare tracenum
+					const file_name = set_file_name;
+					const model = "N9320B";
+					const serial_num = "CN03226482";
+					const center_freq = document.getElementById("realcenter").value;
+					const span = document.getElementById("realspan").value;
+					const res_band = document.getElementById("resbw").value*1000000;
+					const vid_band = document.getElementById("videobw").value*1000000;
+					const ref_level = document.getElementById("reflevel").value;
+					const num_points = datasets[0].data.length;
+					var graph_dataset = [];
+					//Penguin16 | Edited Block | Changed to correct format {
+					for (let i = 1; i < num_points; i++) { //Penguin18 | edited line
+						graph_dataset.push((i) + "," + Math.round(labels[i]) + ",Hz," + datasets[tracenum].data[i].toFixed(2) +",dBm\n"); //Penguin16 | Edited Line | changed 0 to tracenum //Penguin18 | edited line
+					}
+					var data = "File name: " + file_name + "\n" + 
+						"Model: " + model + "\n" + 
+						"Serial Number: " + serial_num + "\n" + 
+						"Center Frequency: " + center_freq + ",Hz\n" + 
+						"Span: " + span + ",Hz\n" + 
+						"Resolution Band: " + res_band + ",Hz\n" + 
+						"Video Band: " + vid_band + ",Hz\n" + 
+						"Reference Level: " + ref_level + ",dBm\n" +
+						"Number of Points: " + num_points + "\n" +
+						"\nNo,Frequency,Amplitude\n";
+					//Penguin16 }
+					graph_dataset.forEach( dataset => {
+						data += dataset
+					});
+					const type = "text/plain;charset=utf-8";
+					download(data, file_name, type);
+				};
+				document.getElementById('downloading').value = 0;
+			};
+
+			//Penguin15 }
+			
+            //chart.update(); Penguin16 | Uncommented Line | chart.update already in updatereflevel // has been moved out
+			updateRefLevel(salesChart);
+			
+			document.getElementById("markeramplitude1").value = (y_value1*(-100-reflevelx)/-100 + reflevelx).toFixed(2); //Penguin9 | added formula
+			document.getElementById("markeramplitude2").value = (y_value2*(-100-reflevelx)/-100 + reflevelx).toFixed(2); //Penguin9 | added formula
+			document.getElementById("markeramplitude3").value = (y_value3*(-100-reflevelx)/-100 + reflevelx).toFixed(2); //Penguin9 | added formula
+			document.getElementById("markeramplitude4").value = (y_value4*(-100-reflevelx)/-100 + reflevelx).toFixed(2); //Penguin9 | added formula
+			
+			chart.update(); //Penguin18 | added line | placed update where it should belong
+			document.getElementById("blockbox").style.display = "none"
+		},
+        //error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+        error: function (xhr, status, error) {
+            var errorMessage = xhr.status + ': ' + xhr.statusText
+                alert('Error - ' + errorMessage);
+        }
+    });
+
+}
+ 
+function loadAllCharts(year) {
+    //loadChart(salesChart, `/vsa/chart/sales/2021/`);
+	document.getElementById("blockbox").style.display = "block";
+	const timer = setTimeout(() => {document.getElementById("blockbox").style.display = "none"}, 1000); //Penguin26 | added line | also adds a timer where blockbox will disappear
+	loadChart(salesChart, `/vsa/chart/sales/${year}/`);
+}
+
+let salesCtx = document.getElementById("salesChart").getContext("2d");
+Chart.defaults.global.legend.display = false;
+
+//Penguin8 | reflevelx has been removed form being a global const
+//#Penguin5 | added from {
+//Penguin7 | Uncommented block
+/*
+const attenuationLine = {
+	id: 'attenuationLine',
+	afterDraw(chart, args, options) {
+		const { ctx, chartArea: {top, right, bottom, left, width, height}, scales: {x, y} } = chart;
+		const chartheight = 323.61093456366933;
+		const PixelPerAmp = chartheight/100;
+		const yChartOffset = 33;
+		const reflevelx =  Math.round(parseInt(yChartOffset)); //Penguin7 | edited to only ychartoffset
+		ctx.save();
+		
+		ctx.fillStyle = 'red';
+		ctx.fillRect(left, reflevelx, 1040, 2);
+		ctx.restore();
+	}
+};*/
+//#Penguin5 | to }
+//Penguin19 | added/moved/edited block {
+const chartInfo = { //Penguin22 | edited line | changed name to chartInfo instead of markerTitle
+	id: 'chartInfo',
+	afterDraw(chart, args, options) {
+		const { ctx, chartArea: {top, right, bottom, left, width, height}, scales: {x, y} } = chart;
+		ctx.save();
+		ctx.textAlign = 'start'
+		ctx.fillStyle = "gray";
+		//Penguin18 | added block {
+		var current_marker_amp = 0;
+		var current_marker_freq = 0;
+		var current_marker = document.getElementById("currentmarker").value;
+		
+		let active = false;
+		if (document.getElementById("markercheckbox1").checked || document.getElementById("markercheckbox2").checked || document.getElementById("markercheckbox3").checked || document.getElementById("markercheckbox4").checked) active = true;
+		if (current_marker != "0" && active) { 
+			switch (parseInt(current_marker)) {
+				case 1:
+					current_marker_amp = document.getElementById("markeramplitude1").value;
+					current_marker_freq = document.getElementById("markerfrequency1").value;
+					break;
+				case 2:
+					current_marker_amp = document.getElementById("markeramplitude2").value;
+					current_marker_freq = document.getElementById("markerfrequency2").value;
+					break;
+				case 3:
+					current_marker_amp = document.getElementById("markeramplitude3").value;
+					current_marker_freq = document.getElementById("markerfrequency3").value;
+					break;
+				case 4:
+					current_marker_amp = document.getElementById("markeramplitude4").value;
+					current_marker_freq = document.getElementById("markerfrequency4").value;
+					break;
+				default:
+					current_marker_amp = "";
+					break;
+			};
+			const text = "Marker" + current_marker + ": "; //Penguin18 | edited line
+			ctx.fillText(text, chart.chart.width*0.70, chart.chart.height*0.05);
+			ctx.fillText(current_marker_amp + "dBm", chart.chart.width*0.80, chart.chart.height*0.05);
+			ctx.fillText(current_marker_freq + "MHz", chart.chart.width*0.80, chart.chart.height*0.08);
+		}
+		//Penguin18 }
+		
+		
+		//Penguin21 | added block{
+		const atten = document.getElementById("attenuation").value;
+		const ref = document.getElementById("reflevel").value;
+		const rbw = document.getElementById("resbw").value;
+		const vbw = document.getElementById("videobw").value;
+		const scale = document.getElementById("scalediv").value;
+		const scale_type = document.getElementById("scaletyperadio1").value;
+		const center_unit = document.getElementById("centerunit").value;
+		const span_unit = document.getElementById("spanunit").value;
+		const start_unit = document.getElementById("fstartunit").value;
+		const stop_unit = document.getElementById("fstopunit").value;
+		var center = document.getElementById("realcenter").value;
+		var span = document.getElementById("realspan").value;
+		var start = document.getElementById("realfstart").value;
+		var stop = document.getElementById("realfstop").value;
+		
+		if (center_unit == "KHz") {
+			center /= 1000;
+        }
+        else if (center_unit == "MHz") {
+			center /= 1000000;
+        }
+        else if (center_unit == "GHz") {
+			center /= 1000000000;
+        };
+		
+		if (span_unit == "KHz") {
+			span /= 1000;
+        }
+        else if (span_unit == "MHz") {
+			span /= 1000000;
+        }
+        else if (span_unit == "GHz") {
+			span /= 1000000000;
+        };
+		
+		if (start_unit == "KHz") {
+			start /= 1000;
+        }
+        else if (start_unit == "MHz") {
+			start /= 1000000;
+        }
+        else if (start_unit == "GHz") {
+			start /= 1000000000;
+        };
+		
+		if (stop_unit == "KHz") {
+			stop /= 1000;
+        }
+        else if (stop_unit == "MHz") {
+			stop /= 1000000;
+        }
+        else if (stop_unit == "GHz") {
+			stop /= 1000000000;
+        };
+		
+		ctx.fillText("Atten " + atten + "dB", chart.chart.width*0.30, chart.chart.height*0.1);
+		ctx.fillText("Ref " + ref + "dBm", chart.chart.width*0.05, chart.chart.height*0.04);
+		ctx.fillText(scale_type, chart.chart.width*0.05, chart.chart.height*0.07);
+		ctx.fillText(scale + "/div", chart.chart.width*0.05, chart.chart.height*0.1);
+		
+		ctx.fillText("Start " + start + start_unit, chart.chart.width*0.05, chart.chart.height*0.9);
+		ctx.fillText("Center " + center + center_unit, chart.chart.width*0.45, chart.chart.height*0.9);
+		ctx.fillText("Stop " + stop + stop_unit, chart.chart.width*0.85, chart.chart.height*0.9)
+		ctx.fillText("RBW " + rbw + "dBm", chart.chart.width*0.05, chart.chart.height*0.93);
+		ctx.fillText("VBW " + vbw + "dBm", chart.chart.width*0.45, chart.chart.height*0.93);
+		ctx.fillText("Span " + span + span_unit, chart.chart.width*0.69, chart.chart.height*0.9);
+		
+		//Penguin21 }
+		ctx.restore();
+	}
+};
+//Penguin19 }
+//Penguin21 | added block {
+/* Made obsolete by markers plugin
+const markerLabel = {
+	id: 'markerLabel',
+	afterDatasetsDraw(chart) {
+		if (chart.data.datasets.length > 0) {
+			var ctx = chart.ctx;
+			var data_length = chart.data.datasets.length
+			var dataset = chart.data.datasets[chart.data.datasets.length-6];
+			var datasetMeta = chart.getDatasetMeta(chart.data.datasets.length-6);
+			if (datasetMeta.hidden) return;
+			datasetMeta.data.forEach( (point, index) => {
+				if (point._model.radius && point._model.backgroundColor == "#f2f2f2") {
+					var value = [],
+						x = point.getCenterPoint().x,
+						y = point.getCenterPoint().y,
+						font_size = '14',
+						radius = point._model.radius;
+						true_x = (point._xScale.ticks[point._index]/1000000).toFixed(3);
+					//Penguin22 | edited block {
+					const closest = [];
+					if (document.getElementById("markercheckbox1").checked) {
+						closest.push(Math.abs(parseFloat(document.getElementById("markerfrequency1").value) - true_x));
+					} else {
+						closest.push(Infinity);
+					};
+					if (document.getElementById("markercheckbox2").checked) {
+						closest.push(Math.abs(parseFloat(document.getElementById("markerfrequency2").value) - true_x));
+					} else {
+						closest.push(Infinity);
+					};
+					if (document.getElementById("markercheckbox3").checked) {
+						closest.push(Math.abs(parseFloat(document.getElementById("markerfrequency3").value) - true_x));
+					} else {
+						closest.push(Infinity);
+					};
+					if (document.getElementById("markercheckbox4").checked) {
+						closest.push(Math.abs(parseFloat(document.getElementById("markerfrequency4").value) - true_x));
+					} else {
+						closest.push(Infinity);
+					};
+					const closest_point = closest.indexOf(Math.min(...closest));
+					if (closest_point == 0) value.push(1);
+					if (closest_point == 1) value.push(2);
+					if (closest_point == 2) value.push(3);
+					if (closest_point == 3) value.push(4);
+					//Penguin22 }
+					ctx.save();
+					ctx.textBaseline = 'middle';
+					ctx.textAlign = 'center';
+					ctx.font = font_size + 'px Arial';
+					ctx.fillStyle = 'white';
+					ctx.fillText(value, x, y - radius - font_size/2);
+					ctx.restore();
+				};
+			});
+		}
+	}
+};*/
+//Penguin26 | added block | the rewritten marker system is here, lets goooo {
+const markers = {
+	id: 'markers',
+	afterDatasetsDraw(chart) {
+		if (chart.data.datasets.length > 0) {
+			var ctx = chart.ctx;
+			var datasetMeta = chart.getDatasetMeta(chart.data.datasets.length-6);
+			const x_endPixel = datasetMeta.controller._xScale._endPixel;
+			const y_endPixel = datasetMeta.controller._yScale._endPixel;
+			const x_startPixel = datasetMeta.controller._xScale._startPixel;
+			const y_startPixel = datasetMeta.controller._yScale._startPixel;
+			const span = parseFloat(document.getElementById("realspan").value);
+			const start = parseFloat(document.getElementById("realfstart").value);
+			//const reflevel = parseFloat(document.getElementById("reflevel").value); -reflevel (forgot the graph compensates for the reflevel change and remains unaffected)
+			ctx.save();
+			
+			let markerDraw = []
+			if (document.getElementById("markercheckbox1").checked == true) setMarker("markerfrequency1","markeramplitude1","1");
+			if (document.getElementById("markercheckbox2").checked == true) setMarker("markerfrequency2","markeramplitude2","2");
+			if (document.getElementById("markercheckbox3").checked == true) setMarker("markerfrequency3","markeramplitude3","3");
+			if (document.getElementById("markercheckbox4").checked == true) setMarker("markerfrequency4","markeramplitude4","4");
+			
+			function setMarker(frequency, amplitude, value) {
+				const markerfreq = parseFloat(document.getElementById(frequency).value)*1000000;
+				const markeramp = parseFloat(document.getElementById(amplitude).value);
+				
+				const x_ratio = ((x_endPixel-x_startPixel)/span)*(markerfreq - start);
+				const y_ratio = ((y_endPixel-y_startPixel)/-100)*markeramp;
+				var position = {"x": (x_ratio+x_startPixel), "y":(y_ratio+y_startPixel)}; //Formula: (((PixelEnd-PixelStart)/Span) * currentData) + PixelStart
+				//datasetMeta.data[index].getCenterPoint(); The failed point index method
+				
+				let dupe = false;
+				for (let i = 0; i < markerDraw.length; i++) {
+					if (markerDraw[i][0] == position.x) {
+						markerDraw[i][2] += "," + String(value);
+						dupe = true;
+						break;
+					}
+				}
+				if (!markerDraw || !dupe) {
+					markerDraw.push([position.x, position.y, value]);
+				}
+			}
+			
+			const marker_size = 8;
+			const font_size = 12;
+			for (let i = 0; i < markerDraw.length; i++) {
+				ctx.textBaseline = 'alphabetic';
+				ctx.textAlign = 'center';
+				ctx.fillStyle = 'white';
+				
+				ctx.font = marker_size + 'px Arial';
+				ctx.fillText("▼", markerDraw[i][0], markerDraw[i][1]);
+				ctx.font = font_size + 'px Arial';
+				ctx.fillText(markerDraw[i][2], markerDraw[i][0], markerDraw[i][1]-font_size/1.5);
+			};
+			ctx.restore();
+		}
+	}
+};
+//Penguin26 }
+//Penguin21 }
+let salesChart = new Chart(salesCtx, {
+    type: "line",
+    options: {
+		layout: {
+            padding: {
+                bottom: 50,
+				top: 15,
+            }
+        },
+        animation: {
+            duration: 0, // general animation time
+        },
+        hover: {
+            animationDuration: 0, // duration of animations when hovering an item
+        },
+        responsiveAnimationDuration: 0, // animation duration after a resize
+		
+        //bezierCurve: true,
+        events: [],
+        responsive: false,
+        elements: {
+            point: {
+                radius: 0
+            },
+            line: {
+                tension: 10 // disables bezier curves
+            }
+        },
+        scales: {
+            //scaleShowLabels : false,
+            xAxes: [{
+                    ticks: {
+                        autoSkip: true,
+                        //stepSize: 10,
+                        //count: 10,
+                        maxTicksLimit: 20,
+                        //scaleFontSize: 1,
+                        fontSize: 0.1, //Penguin22 | edited line | changing display to false will have BAD results. this comment below is a lie.
+                        display: true
+                    },
+                    gridLines: {
+                        color: "#333333",
+                        display: true,
+                        drawBorder: true
+                    }
+
+                }
+            ],
+
+            yAxes: [{
+                    beginAtZero:false,
+                    ticks: {
+                        min: -100,
+                        max: 0,
+                        //stepSize: 10,
+                        suggestedMin: -100,
+                        suggestedMax: 10,
+                        autoSkip: false,
+                        //stepSize: 100,
+                        //count: 10,
+                        maxTicksLimit: 20,
+                        display: true //this will remove only the label,
+                    },
+                    gridLines: {
+                        drawBorder: true,
+                        display: true,
+                        zeroLineColor: '#333333',
+                        color: "#333333"
+                    }
+                }
+            ]
+        }
+    },
+	//plugins: [attenuationLine] //Penguin5 | Added line //Penguin7 | Uncommented //Penguin16 || Recommented
+	plugins: [chartInfo, markers] //Penguin19 | added line //Penguin21 | edited line //Penguin26 | edited line | markerLabel replaced with markerss
+});
+
+//#Penguin6 | Added from {
+function updateRefLevel(chart) { 
+	const reflevelx = parseFloat(document.getElementById("reflevel").value); //Penguin8 | added parseFloat to be consistent
+	chart.options.scales.yAxes[0].ticks.min = parseInt(-100); //Penguin8 | Reverted to -100
+	chart.options.scales.yAxes[0].ticks.max = parseInt(reflevelx);
+    //Penguin18 | removed line
+}
+
+//Penguin6 | to }
+
+var zero = 0;
+//var sineData = [];
+
+const data0 = [];
+const data1 = [];
+const data2 = [];
+const data3 = [];
+const data4 = [];
+const data5 = [];
+
+//var databuffer = [];
+//var databuffer = cloneObject(salesChart.data.datasets);
+
+function cloneObject(obj) {
+    var clone = {};
+    for (var i in obj) {
+        if (obj[i] != null && typeof(obj[i]) == "object")
+            clone[i] = cloneObject(obj[i]);
+        else
+            clone[i] = obj[i];
+    }
+    return clone;
+}
+
+var tempcount = 1;
+function adddata() {
+	const reflevelx = parseFloat(document.getElementById("reflevel").value); //Penguin9 | added line
+	const datalength = salesChart.data.datasets.length;
+    
+	salesChart.data.datasets[datalength-30].data = salesChart.data.datasets[datalength+tempcount-30].data;
+    salesChart.data.datasets[datalength-30].pointRadius = salesChart.data.datasets[datalength+tempcount-30].pointRadius;
+	salesChart.data.datasets[datalength-24].data = salesChart.data.datasets[datalength+tempcount-24].data;
+    salesChart.data.datasets[datalength-24].pointRadius = salesChart.data.datasets[datalength+tempcount-24].pointRadius;
+	salesChart.data.datasets[datalength-18].data = salesChart.data.datasets[datalength+tempcount-18].data;
+    salesChart.data.datasets[datalength-18].pointRadius = salesChart.data.datasets[datalength+tempcount-18].pointRadius;
+	salesChart.data.datasets[datalength-12].data = salesChart.data.datasets[datalength+tempcount-12].data;
+    salesChart.data.datasets[datalength-12].pointRadius = salesChart.data.datasets[datalength+tempcount-12].pointRadius;
+	salesChart.data.datasets[datalength-6].data = salesChart.data.datasets[datalength+tempcount-6].data;
+    salesChart.data.datasets[datalength-6].pointRadius = salesChart.data.datasets[datalength+tempcount-6].pointRadius;
+	
+    salesChart.update();
+    tempcount++;
+    if (tempcount > 5)
+        tempcount = 1;
+
+	//Penguin9 | added formula to all marker values from {
+    if (typeof markeramplitude2 !== 'undefined')
+    {
+        if(tempcount==1)
+        {
+            if (document.getElementById("markercheckbox1").checked == true)
+            {
+                $("#markeramplitude1").val((y_value1*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox2").checked == true)
+            {
+                $("#markeramplitude2").val((y_value2*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox3").checked == true)
+            {
+                $("#markeramplitude3").val((y_value3*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox4").checked == true)
+            {
+                $("#markeramplitude4").val((y_value4*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+        }
+        if(tempcount==2)
+        {
+            if (document.getElementById("markercheckbox1").checked == true)
+            {
+                $("#markeramplitude1").val((y_value21*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox2").checked == true)
+            {
+                $("#markeramplitude2").val((y_value22*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox3").checked == true)
+            {
+                $("#markeramplitude3").val((y_value23*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox4").checked == true)
+            {
+                $("#markeramplitude4").val((y_value24*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+        }
+        if(tempcount==3)
+        {
+            if (document.getElementById("markercheckbox1").checked == true)
+            {
+                $("#markeramplitude1").val((y_value31*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox2").checked == true)
+            {
+                $("#markeramplitude2").val((y_value32*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox3").checked == true)
+            {
+                $("#markeramplitude3").val((y_value33*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox4").checked == true)
+            {
+                $("#markeramplitude4").val((y_value34*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+        }
+        if(tempcount==4)
+        {
+            if (document.getElementById("markercheckbox1").checked == true)
+            {
+                $("#markeramplitude1").val((y_value21*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox2").checked == true)
+            {
+                $("#markeramplitude2").val((y_value22*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox3").checked == true)
+            {
+                $("#markeramplitude3").val((y_value23*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox4").checked == true)
+            {
+                $("#markeramplitude4").val((y_value24*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+        }
+        if(tempcount==5)
+        {
+			//Penguin16 | Removed block and added new block | Realized that innerhtml method does not work {
+			if (document.getElementById("markercheckbox1").checked == true)
+            {
+                $("#markeramplitude1").val((y_value51*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox2").checked == true)
+            {
+                $("#markeramplitude2").val((y_value52*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox3").checked == true)
+            {
+                $("#markeramplitude3").val((y_value53*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+            if (document.getElementById("markercheckbox4").checked == true)
+            {
+                $("#markeramplitude4").val((y_value54*(-100-reflevelx)/-100 + reflevelx).toFixed(2));
+            }
+			//Penguin16 }
+        }
+    }
+	//Penguin9 | to }
+	
+    //$("#MarkerSetDiv").load(" #MarkerSetDiv > *");
+	//if (document.getElementById("markercheckbox2").checked == true) {
+	//const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+	//loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values);
+	//}
+
+}
+
+setInterval(function () {
+    adddata();
+}, 100);
+
+      </script>
+    </div>
+</div>
+
+		  </div>
+		<div class="flex-item content" id="unknownTab" style="min-height:600px; min-width:400px;">
+			<a href="https://youtu.be/tzYPr9w22VU" style="white-space:pre-line"></a>
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+  
+</body>
+</html>
