@@ -648,7 +648,7 @@ Observation & Question
 				<button type="button" style="width:240px; height:38px; flex-wrap: wrap; text-align: center;" id="onButton" onclick="" disabled=true>Frequency Synthesizer Off</button>
 				<select name="year" style="position:absolute; top:46px; left:120px;" id="year" disabled=true>
 				  <option value="Freq.Syn-880">880.0</option>
-				  <option value="Freq.Syn-818">818.0</option>
+				  <option value="Freq.Syn-818" selected>818.0</option>
 				  <option value="Freq.Syn-816">816.0</option>
 				</select>
 				<input type="hidden" value="L5" id="previousyear">
@@ -1615,7 +1615,6 @@ function updateTrace() {
 			const lab = $("#lab").val(); //Penguin20 | edited line
 			const dlayer = $("#dlayer").val();
 			var year = "Freq.Syn-Off";
-            console.log("🚀 ~ file: statistics.html ~ line 1602 ~ document.getElementById ~ Freq.Syn-Off", Freq.Syn-Off)
 			var marker_x_value1 = "None";
 			var marker_x_value2 = "None";
 			var marker_x_value3 = "None";
