@@ -2523,7 +2523,7 @@ function loadChart(chart, endpoint) {
 			}
 			//Penguin18 }
 			
-			document.getElementById("peaknum").value = true_peak_num //Penguin13 | Added line | peaknum updated yay
+			document.getElementById("peaknum").value = true_peak_num; //Penguin13 | Added line | peaknum updated yay
 			
 			//Penguin12 | Added block | peak must be done before amplitude update so peaknum added as an element in loadallcharts {
 			document.getElementById("peaknum").max = peak_list.length - 1; //Penguin12 | Added line | set max to array size 
@@ -2535,7 +2535,7 @@ function loadChart(chart, endpoint) {
 				//Penguin20 | added/edited block {
 				var current_value = 0.000
 				if (min_value == "None") {	
-					current_value = (peak_list[true_peak_num]/1000000).toFixed(3)\; //Penguin19 | edited/moved line 
+					current_value = (peak_list[true_peak_num]/1000000).toFixed(3); //Penguin19 | edited/moved line 
 				} else {
 					current_value = (min_value/1000000).toFixed(3);
 				};
