@@ -693,7 +693,8 @@ Observation & Question
   <td><input type="button" id="AutoTune" class="button" value="Auto Tune" style="color:black;" onclick="showBox('')" /></td>
   <td><input type="button" id="BWAvg" class="button" value="BW/Avg" style="color:black;" onclick="showBox('BWSet')"/></td>
   <td><input type="button" id="Sweep" class="button" value="Sweep/Trig" style="color:black;" onclick="showBox('')"/></td>
-  <td><input type="button" id="reset" class="button" value="Preset/System" style="background-color:green;color:white;" onclick="showBox('')"/></td>
+  <td><input type="button" id="reset" class="button" value="Preset/System" style="background-color:green;color:white;" onclick="showBox('');"/></td>
+  <input type="hidden" id="doReset" value="false">
 </tr>
 <tr>
   <td><input type="button" id="Frequency1" class="button" value="Span" style="background-color:gray;color:white;" onclick="showBox('FrequencySet')"/></td>
@@ -1628,7 +1629,8 @@ function updateTrace() {
 			document.getElementById("fstop").value = 0;
 			document.getElementById("previouslab").value = 0;
 			document.getElementById("previousyear").value = 0;
-			
+			document.getElementById("doReset").value = "true";
+
 			//Penguin20 | added block {
 			document.getElementById("markercheckbox1").checked = false;
 			document.getElementById("markercheckbox2").checked = false;
@@ -2493,6 +2495,7 @@ function loadChart(chart, endpoint) {
 			//#Penguin3 | added from here {
 			const freqmin = 0; //Penguin11 | round value //Penguin18 | Edited Line 
 			const freqmax = Math.round(jsonResponse.freq_data_range[1]/1000000); //Penguin11 | round value
+			console.log(freqmax);
 			//#Penguin3 | to here }
 			const min_value = jsonResponse.min; //Penguin20 | added line
 			
@@ -2586,8 +2589,10 @@ function loadChart(chart, endpoint) {
 			//#Penguin2 | to here }
 			
 			//Check if lab graph changed and update marker minmax frequency 
-			//#Penguin3 | added from here {
-			if (!(document.getElementById("previouslab").value == document.getElementById("lab").value)) { //Penguin21 | Edited line |  || !(document.getElementById("previousyear").value == document.getElementById("year").value)
+			//#Penguin3 | added from here { 
+			if (!(document.getElementById("previouslab").value == document.getElementById("lab").value) || document.getElementById("doReset").value == "true") { //Penguin21 | Edited line |  || !(document.getElementById("previousyear").value == document.getElementById("year").value)
+				console.log("a");
+				document.getElementById("doReset").value = "false";
 				document.getElementById("previouslab").value = document.getElementById("lab").value;
 				document.getElementById("previousyear").value = document.getElementById("year").value;
 				document.getElementById("markerminmax1").min = freqmin;
@@ -3005,7 +3010,9 @@ function loadChart(chart, endpoint) {
 			document.getElementById("markeramplitude4").value = (y_value4*(-100-reflevelx)/-100 + reflevelx).toFixed(2); //Penguin9 | added formula
 			
 			chart.update(); //Penguin18 | added line | placed update where it should belong
-			document.getElementById("blockbox").style.display = "none"
+			const timer = setTimeout(() => {
+				document.getElementById("blockbox").style.display = "none";
+			}, 0);
 		},
         //error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
         error: function (xhr, status, error) {
@@ -3019,7 +3026,7 @@ function loadChart(chart, endpoint) {
 function loadAllCharts(year) {
     //loadChart(salesChart, `/vsa/chart/sales/2021/`);
 	document.getElementById("blockbox").style.display = "block";
-	const timer = setTimeout(() => {document.getElementById("blockbox").style.display = "none"}, 1000); //Penguin26 | added line | also adds a timer where blockbox will disappear
+	 //Penguin26 | added line | also adds a timer where blockbox will disappear
 	loadChart(salesChart, `/vsa/chart/sales/${year}/`);
 }
 

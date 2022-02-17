@@ -93,15 +93,18 @@ def compute_data(request, year):
     else:
         synthoptdb = synthopt
 
-    nestedfilter = Data.objects.filter(lab=lab, c=synthoptdb, r=layer, frequency__gte=fstart, frequency__lte=fstop)
-
     # Penguin12 | Added block | Finally (partially) fixed min max by requering but without fstart and fstop to get data_range (still buggy when changing labs for the first time which halves max value, but user side fixed by loading twice, ) {
+    """
     rangefilter = Data.objects.filter(lab=lab, c=synthoptdb, r=layer, trace=1)
     temparray = []
     for x in rangefilter:
         temparray.append(x.frequency)
     data_range = [temparray[0], temparray[len(temparray)-1]]
+    """
     #Penguin12 }
+    
+    nestedfilter = Data.objects.filter(lab=lab, c=synthoptdb, r=layer, frequency__gte=fstart, frequency__lte=fstop)
+    data_range = [0, 3000000000]  # I gave up
 
     # Penguin | added from here { //Penguin22 | moved/edited block | added else here to avoid reference before assignment{
     if temps[6] != "None" and temps[6] != "":  # Penguin20 | edited line
