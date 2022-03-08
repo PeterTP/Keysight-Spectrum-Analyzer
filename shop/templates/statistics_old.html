@@ -293,6 +293,12 @@ input[type=number].hidearrows {
   <div class="flex-container flex-row">
 	<div class="flex-container flex-column" style="min-width:800px;">
 	  <div class="flex-container flex-row border" style="max-height: 120px; min-height: 120px; padding-left:160px">
+		<div>
+		  <select>
+			<option value="L1">L1 T1</option>
+			<option value="L5"> L5 T1</option>
+		  </select>
+		</div>
 		<input class="flex-item flex-button" type="button" style="" value="Lab Station" onclick="showTab('labStationTab')"></input>
 		<input class="flex-item flex-button" type="button" style="" value="Training Kit" onclick="showTab('trainingKitTab')"></input>
 		<input class="flex-item flex-button" type="button" style="min-width:220px" value="Spectrum Analyzer" onclick="showTab('spectrumAnalyzerTab')"></input>
@@ -638,18 +644,10 @@ Observation & Question
 				<button type="button" style="width:88px; height:55px; flex-wrap: wrap; text-align: center;" id="connectButton" onclick="document.getElementById('isConnected').value = true; updateTrainingKit()">Connect to RF Trainer</button>
 				<button type="button" style="width:88px; height:55px; flex-wrap: wrap; text-align: center;" id="disconnectButton" onclick="document.getElementById('isConnected').value = false; updateTrainingKit()">Shutdown RF Trainer</button>
 			  </div>
-			  <div style="position:absolute; top:51.5%; left:3.5%; height:180px; width:240px;">
-				<select name="lab" id="lab" >
-				  <!-- <option value="L1">L1 T1</option> style="display:none" -->
-					<option value="L5" selected> L5 T1</option>
-					<option value="900Z-15ZVariableXZMOff"> L5 T2 RF On 900,-15 Mixer Off </option>
- 					<option value="900Z-15ZVariableXZMOn"> L5 T2 RF On 900,-15 Mixer On </option>
- 					<option value="860Z-15ZVariableXZMOff"> L5 T2 RF On 860,-15 Mixer Off </option>
- 					<option value="860Z-15ZVariableXZMOn"> L5 T2 RF On 860,-15 Mixer On </option>
- 					<option value="868Z-15ZVariableXZMOff"> L5 T2 RF On 868,-15 Mixer Off </option>
- 					<option value="868Z-15ZVariableXZMOn"> L5 T2 RF On 868,-15 Mixer On </option>
- 					<option value="RFOutputOffZVariableXZMOff"> L5 T2 RF Off Mixer Off </option>
- 					<option value="RFOutputOffZVariableXZMOn"> L5 T2 RF Off Mixer On </option>
+			  <div style="position:absolute; top:51.5%; left:3.5%; height:80px; width:240px;">
+				<select name="lab" id="lab" style="display:none">
+				  <!-- <option value="L1">L1 T1</option> -->
+				  <option value="L5"> L5 T1</option>
 				</select>
 				<input type="hidden" value="0" id="previouslab"> <!-- Penguin22 | edited line -->
 				<input type="hidden" value=false id="isOn">

@@ -54,7 +54,6 @@ def compute_data(request, year):
     peaknum = str(temps[10])  # Penguin12 | Added Line | extract 'em
     current_marker = int(temps[11])
 
-
     if valopt == "center":
         center = float(temps[1]) * 1000000
         span = float(temps[2]) * 1000000
@@ -75,26 +74,17 @@ def compute_data(request, year):
 
     span = fstop - fstart
 
-    if len(lab) > 18:
-        templayer = lab
-    else:
-        templayer=""
-
     if lab == "L1":
         layer = "RF Output Off"
-    elif span >= 2900000000:
+    elif span > 2900000000:
         layer = "Layer1"
-    elif span >= 1000000000:
+    elif span > 1000000000:
         layer = "Layer2"
-    elif span >= 500000000:
+    elif span > 500000000:
         layer = "Layer3"
     else:
         layer = "Layer4"
 
-    if len(templayer) > 18:
-        layer = templayer.replace("VariableX", layer)
-        layer = layer.replace("Z", "|")
-        lab = "L5"
     #  year = "Start:" + str(round(fstart / 1000000)) + "MHz,Stop:" + str(round(fstop / 1000000)) + "MHz,Layer:" + layer  # Penguin22 | commented line
     # ,frequency_gte=startf, frequency__lte= stopf 814000000, frequency__lte= 821000000)
 
@@ -112,13 +102,9 @@ def compute_data(request, year):
     data_range = [temparray[0], temparray[len(temparray)-1]]
     """
     #Penguin12 }
-    print (layer)
-    print(fstart)
-    print(fstop)
-
-
+    
     nestedfilter = Data.objects.filter(lab=lab, c=synthoptdb, r=layer, frequency__gte=fstart, frequency__lte=fstop)
-    data_range = [0, 3000000000]  # never give up
+    data_range = [0, 3000000000]  # I gave up
 
     # Penguin | added from here { //Penguin22 | moved/edited block | added else here to avoid reference before assignment{
     if temps[6] != "None" and temps[6] != "":  # Penguin20 | edited line
