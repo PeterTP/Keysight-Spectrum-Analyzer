@@ -720,22 +720,22 @@ Observation & Question
 		  </div>
 		</div>
 		<div class="flex-item content" id="signalGeneratorTab" style="min-height:600px; min-width:400px;">
-			
-		  <div style="background-color:#000000; height:200px; width:500px;">
+		  <div style="height:600px; width:1200px;">
+			<div style="background-color:#000000; height:200px; width:400px; left:50px; top:50px; position:absolute; padding: 10px;">
 			  <table>
-				<tr>
-				  <td>Frequency:</td>
-				  <td><input type="number" id="signalGeneratorFrequency" value=900 readonly></td>
-				</tr>
-				<tr>
-				  <td>Amplitude</td>
-				  <td><input type="text" id="signalGeneratorAmplitude" value=-15 readonly></td>
-				</tr>
+			    <tr>
+			      <td>Frequency: </td>
+			      <td><input type="number" id="signalGeneratorFrequency" value=900 readonly></td>
+			    </tr>
+			    <tr>
+			      <td>Amplitude: </td>
+			      <td><input type="text" id="signalGeneratorAmplitude" value=-15 readonly></td>
+			    </tr>
 			  </table>
-		  </div>
-			<button type="button" style="width:74px; height:54px; flex-wrap: wrap; text-align: center;" id="signalGeneratorFrequencyButton" onclick="">Frequency</button>
-			<button type="button" style="width:74px; height:54px; flex-wrap: wrap; text-align: center;" id="signalGeneratorAmplitudeButton" onclick="">Amplitude</button>
-		  	<script>
+		    </div>
+		    <button type="button" style="width:76px; height:54px; left:500px; top:50px; position:absolute; flex-wrap: wrap; text-align: center;" id="signalGeneratorFrequencyButton" onclick="">Frequency</button>
+		    <button type="button" style="width:74px; height:54px; left:500px; top:120px; position:absolute; flex-wrap: wrap; text-align: center;" id="signalGeneratorAmplitudeButton" onclick="">Amplitude</button>
+		    <script>
 				document.getElementById("signalGeneratorFrequencyButton").onclick = function() {
 					if (document.getElementById("signalGeneratorFrequency").value == "900") {
 						document.getElementById("signalGeneratorFrequency").value = 868;
@@ -754,7 +754,8 @@ Observation & Question
 					}
 					processOption();
 				};
-			</script>
+		    </script>
+		  </div>
 		</div>
 		<div class="flex-item content startShow" id="spectrumAnalyzerTab" style="min-height:600px; min-width:400px;">
 		
