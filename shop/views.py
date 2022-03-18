@@ -304,7 +304,6 @@ def compute_data(request, year):
             current_value = minimum  # Penguin20 | commented line
             # Penguin20 | added block/edited block {
         elif list(peak_dict):  # is peak_dict empty?
-            pass
             current_value = list(peak_dict)[int(peaknum)]  # casting list on peak dict returns only the x values //Penguin20 | commented line
         else:
             peaknum = 0
