@@ -250,7 +250,7 @@ input[type=number].hidearrows {
 	z-index: 2;
 	top: 70px;
 	left: 15px;
-	background-color: #005555;
+	background-color: #000022;
 	transition: left 0.2s;
   }
   
@@ -263,7 +263,7 @@ input[type=number].hidearrows {
 	z-index: 2;
 	top: 15px;
 	left: 15px;
-	background-color: #550055;
+	background-color: #000022;
 	transition: left 0.2s;
   }
   
@@ -280,7 +280,7 @@ input[type=number].hidearrows {
 
   #training {
 	position: relative;
-	left: 0px;
+	left: 190px;
 	top: 25px;
   }
 
@@ -306,24 +306,91 @@ input[type=number].hidearrows {
 
 </style>
   <div class="flex-container flex-row">
-	<div class="flex-container flex-column" style="min-width:800px;">
-	  <div class="flex-container flex-row border" style="max-height: 120px; min-height: 120px; padding-left:160px">
+	<div class="flex-container flex-column" style="min-width:1500px;">
+	  <div class="flex-container flex-row border" style="max-height: 120px; min-height: 120px; padding-left:160px; justify-content:flex-end">
 		<div id="training">
-		  <select id="trainingSelect">
-			<option value="T1">T1</option>
-			<option value="T2">T2</option>
-		  </select>
-		  <script>
-			$("#training").change(function() {
-				processOption();
-			});
-		  </script>
+		    <select id="trainingSelect">
+		  	  <option value="T1">T1</option>
+		  	  <option value="T2">T2</option>
+		    </select>
 		</div>
-		<input class="flex-item flex-button" type="button" style="" value="Lab Station" onclick="showTab('labStationTab')"></input>
+		<input class="flex-item flex-button" type="button" style="min-width:200px" value="Lab Station       " onclick="showTab('labStationTab')"></input>
 		<input class="flex-item flex-button" type="button" style="" value="Training Kit" onclick="showTab('trainingKitTab')"></input>
-		<input class="flex-item flex-button" type="button" style="min-width:220px" value="Signal Generator" onclick="showTab('signalGeneratorTab')"></input>
+		<input class="flex-item flex-button" id="signalGeneratorTabButton" type="button" style="min-width:220px; background-color:#777777" value="Signal Generator" onclick="showTab('signalGeneratorTab')" disabled="false"></input>
 		<input class="flex-item flex-button" type="button" style="min-width:220px" value="Spectrum Analyzer" onclick="showTab('spectrumAnalyzerTab')"></input>
 		<!-- <input class="flex-item flex-button" type="button" style="" value="" onclick="showTab('unknownTab')"></input> -->
+	  <script>
+		$("#training").change(function() {
+			if (document.getElementById("trainingSelect").value == "T1") {
+				document.getElementById("signalGeneratorTabButton").disabled = true;
+				document.getElementById("signalGeneratorTabButton").style.backgroundColor = "#777777";
+			} else {
+				document.getElementById("signalGeneratorTabButton").disabled = false;
+				document.getElementById("signalGeneratorTabButton").style.backgroundColor = "#000022";
+			}
+			alert("All settings will be reverted to default");
+			document.getElementById("signalGeneratorFrequency").value = 900;
+			document.getElementById("signalGeneratorFrequencySelect").value = 900;
+			document.getElementById("signalGeneratorAmplitude").value = "RF OFF";
+			document.getElementById("RFDisplay").innerHTML = "RF OFF";
+			document.getElementById("signalGeneratorAmplitude").disabled = true;
+			document.getElementById("mixerOnButton").innerHTML = "Mixer Off"
+			document.getElementById("mixerIsOn").value = false;
+			document.getElementById("year").value = "Freq.Syn-818";
+			processOption()
+
+			const center = $("#center").val();
+			const span = $("#span").val();
+			const start = $("#fstart").val();
+			const stop = $("#fstop").val();
+			const valopt = $("#valopt").val();
+			const lab = $("#lab").val(); //Penguin20 | edited line
+			const dlayer = $("#dlayer").val();
+			var year = "Freq.Syn-Off";
+			var marker_x_value1 = "None";
+			var marker_x_value2 = "None";
+			var marker_x_value3 = "None";
+			var marker_x_value4 = "None";
+			
+			//document.getElementById("lab").value = "L5"; //Penguin20 | commented line
+			//document.getElementById("year").value = "Freq.Syn-Off"; //Penguin21 | commented line
+			document.getElementById("center").value = 0;
+			document.getElementById("span").value = 0;
+			document.getElementById("fstart").value = 0;
+			document.getElementById("fstop").value = 0;
+			document.getElementById("previouslab").value = 0;
+			document.getElementById("previousyear").value = 0;
+			document.getElementById("doReset").value = "true";
+
+			//Penguin20 | added block {
+			document.getElementById("markercheckbox1").checked = false;
+			document.getElementById("markercheckbox2").checked = false;
+			document.getElementById("markercheckbox3").checked = false;
+			document.getElementById("markercheckbox4").checked = false;
+			document.getElementById("tracecheckbox1").checked = false;
+			document.getElementById("tracecheckbox2").checked = false;
+			document.getElementById("tracecheckbox3").checked = false;
+			document.getElementById("tracecheckbox4").checked = false;
+			document.getElementById("viewcheckbox1").checked = false;
+			document.getElementById("viewcheckbox2").checked = false;
+			document.getElementById("viewcheckbox3").checked = false;
+			document.getElementById("viewcheckbox4").checked = false;
+			document.getElementById("reflevel").checked = 0.0;
+			document.getElementById("peaknum").checked = 0;
+			//Penguin20 }
+			
+			const marker_x_values = [marker_x_value1, marker_x_value2, marker_x_value3, marker_x_value4]
+			if ($("#isConnected").val() == "false") {
+				year = "Disconnected";
+			} else if ($("#isOn").val() == "false") {
+				year = "Freq.Syn-Off";
+			};
+			
+			const peaknum = document.getElementById("peaknum").value;
+			const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
+			loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker);
+		});
+	  </script>
 	  </div>
 	  <div class="flex-container flex-row border">
 	  
@@ -720,7 +787,7 @@ Observation & Question
 					updateTrainingKit()
 				};
 				document.getElementById("mixerOnButton").onclick = function() {
-					if (document.getElementById("mixerIsOn").value == "true") {
+					if (document.getEleme	 ntById("mixerIsOn").value == "true") {
 						document.getElementById("mixerOnButton").innerHTML = "Mixer Off"
 						document.getElementById("mixerIsOn").value = false;
 					} else {
@@ -742,8 +809,8 @@ Observation & Question
 				  <td>Amplitude: </td>
 			    </tr>
 			    <tr>
-				  <td><input type="number" id="signalGeneratorFrequency" value=900 readonly></td>
-			      <td><input type="text" id="signalGeneratorAmplitude" value=-15 readonly></td>
+				  <td><input type="number" id="signalGeneratorFrequency" value=900 readonly disabled="true"></td>
+			      <td><input type="text" id="signalGeneratorAmplitude" value="RF OFF" readonly disabled="true"></td>
 			    </tr>
 			  </table>
 			  <select id="signalGeneratorFrequencySelect" style="width:60px; height:25px; left:740px; top:45px; position:absolute;">
@@ -755,31 +822,39 @@ Observation & Question
 				<option value=-15>-15</option>
 			  </select>
 			  <div style="width:65px; height:25px; left:540px; top:150px; color:black; background-color:cyan; font-size:15px; line-height: 25px; text-align: center; position:absolute;">MOD OFF</div>
-			  <div style="width:65px; height:25px; left:540px; top:180px; color:black; background-color:cyan; font-size:15px; line-height: 25px; text-align: center; position:absolute;" id="RFDisplay">RF ON</div>
+			  <div style="width:65px; height:25px; left:540px; top:180px; color:black; background-color:cyan; font-size:15px; line-height: 25px; text-align: center; position:absolute;" id="RFDisplay">RF OFF</div>
 		      <button type="button" style="width:55px; height:30px; left:1010px; top:45px; background-color:green; color:white; position:absolute; flex-wrap: wrap; text-align: center;" id="signalGeneratorPresetButton" onclick="">Preset</button>
 		      <button type="button" style="width:55px; height:35px; left:900px; top:280px; position:absolute; flex-wrap: wrap; text-align: center;" id="signalGeneratorRFButton" onclick="">RF On/Off</button>
 			  <script>
 				$("#signalGeneratorFrequencySelect").change(function(){
 					document.getElementById("signalGeneratorFrequency").value = document.getElementById("signalGeneratorFrequencySelect").value
+					processOption();
 				});
 				$("#signalGeneratorAmplitudeSelect").change(function(){
 					document.getElementById("signalGeneratorAmplitude").value = document.getElementById("signalGeneratorAmplitudeSelect").value
+					processOption();
 				});
 					document.getElementById("signalGeneratorPresetButton").onclick = function() {
 						document.getElementById("signalGeneratorFrequency").value = 900;
 						document.getElementById("signalGeneratorFrequencySelect").value = 900;
-						document.getElementById("signalGeneratorAmplitude").value = -15;
-					processOption();
-				};
-				document.getElementById("signalGeneratorRFButton").onclick = function() {
-					if (document.getElementById("signalGeneratorAmplitude").value == "-15") {
-						document.getElementById("signalGeneratorAmplitude").value = "RF Off";
+						document.getElementById("signalGeneratorAmplitude").value = "RF OFF";
 						document.getElementById("RFDisplay").innerHTML = "RF OFF";
-					} else {
-						document.getElementById("signalGeneratorAmplitude").value = -15;
-						document.getElementById("RFDisplay").innerHTML = "RF ON";
-					}
-					processOption();
+						document.getElementById("signalGeneratorAmplitude").disabled = true;
+						processOption();
+					};
+					document.getElementById("signalGeneratorRFButton").onclick = function() {
+						if (document.getElementById("signalGeneratorAmplitude").value == "-15") {
+							document.getElementById("signalGeneratorAmplitude").value = "RF OFF";
+							document.getElementById("RFDisplay").innerHTML = "RF OFF";
+							document.getElementById("signalGeneratorAmplitude").disabled = true;
+							document.getElementById("signalGeneratorFrequency").disabled = true;
+						} else {
+							document.getElementById("signalGeneratorAmplitude").value = -15;
+							document.getElementById("RFDisplay").innerHTML = "RF ON";
+							document.getElementById("signalGeneratorAmplitude").disabled = false;
+							document.getElementById("signalGeneratorFrequency").disabled = false;
+						}
+						processOption();
 				};
 		      </script>
 			</div>
@@ -1887,7 +1962,6 @@ function updateTrace() {
 			const peaknum = document.getElementById("peaknum").value;
 			const current_marker = document.getElementById("currentmarker").value //Penguin22 | added line
 			loadAllCharts(year + ',' + center + ',' + span + ',' + valopt + ',' + lab + ',' + dlayer + ',' + marker_x_values + ',' + peaknum + ',' + current_marker); //Penguin22 | edited line //Penguin12 | Added peaknum
-			
 		};
 		//Penguin26 }
 		
@@ -2018,7 +2092,7 @@ function updateTrace() {
 				document.getElementById("labSheetTab").style.overflowY = "hidden";
 				document.getElementById("labSheetTab").style.border = "0px solid #C0CCCC";
 				document.getElementById("labSheetButton").style.left = "15px";
-				document.getElementById("labSheetButton").style.backgroundColor = "#550055";
+				document.getElementById("labSheetButton").style.backgroundColor = "#000022";
 				document.getElementById("labSheetButton").value = "Lab Sheet";
 				document.getElementById("reportButton").value = "Report";
 				document.getElementById("reportButton").style.left = "15px";
@@ -2045,7 +2119,7 @@ function updateTrace() {
 				document.getElementById("reportTab").style.padding = "0px";
 				document.getElementById("reportTab").style.overflowY = "hidden";
 				document.getElementById("reportTab").style.border = "0px solid #C0CCCC";
-				document.getElementById("reportButton").style.backgroundColor = "#005555";
+				document.getElementById("reportButton").style.backgroundColor = "#000022";
 				document.getElementById("reportButton").value = "Report";
 			}
 		}
@@ -2074,7 +2148,7 @@ function updateTrace() {
 				document.getElementById("reportTab").style.overflowY = "hidden";
 				document.getElementById("reportTab").style.border = "0px solid #C0CCCC";
 				document.getElementById("reportButton").style.left = "15px";
-				document.getElementById("reportButton").style.backgroundColor = "#005555";
+				document.getElementById("reportButton").style.backgroundColor = "#000022";
 				document.getElementById("reportButton").value = "Report";
 				document.getElementById("labSheetButton").value = "Lab Sheet";
 				document.getElementById("labSheetButton").style.left = "15px";
@@ -2100,7 +2174,7 @@ function updateTrace() {
 				document.getElementById("labSheetTab").style.padding = "0px";
 				document.getElementById("labSheetTab").style.overflowY = "hidden";
 				document.getElementById("labSheetTab").style.border = "0px solid #C0CCCC";
-				document.getElementById("labSheetButton").style.backgroundColor = "#550055";
+				document.getElementById("labSheetButton").style.backgroundColor = "#000022";
 				document.getElementById("labSheetButton").value = "Lab Sheet";
 			}
 		}
